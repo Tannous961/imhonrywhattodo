@@ -1,3 +1,17 @@
 'use client';
 import {useEffect} from 'react';
-export default function RouteBridge({route}){useEffect(()=>{let timer;const open=()=>{timer=setTimeout(()=>{if(route==='account'||route==='challenges'){const link=document.querySelector('#member-open');link?.addEventListener('click',event=>event.preventDefault(),{once:true});link?.click()}else if(route!=='home')document.getElementById(route)?.scrollIntoView({block:'start'})},350)};const gate=document.querySelector('#age-enter');if(document.body.classList.contains('age-pending'))gate?.addEventListener('click',open,{once:true});else open();return()=>{clearTimeout(timer);gate?.removeEventListener('click',open)}},[route]);return null}
+export default function RouteBridge({route}){
+ useEffect(()=>{
+  const open=()=>{
+   if(document.body.classList.contains('age-pending'))return;
+   if(!document.documentElement.dataset.memberReady)return;
+   if(route==='account'||route==='challenges')document.querySelector('#member-open')?.click();
+   else document.getElementById(route)?.scrollIntoView({block:'start'});
+  };
+  window.addEventListener('member-ready',open);
+  window.addEventListener('adult-confirmed',open);
+  open();
+  return()=>{window.removeEventListener('member-ready',open);window.removeEventListener('adult-confirmed',open)};
+ },[route]);
+ return null;
+}

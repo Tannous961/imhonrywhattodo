@@ -57,5 +57,5 @@ $('#member-preferences').addEventListener('submit',event=>{event.preventDefault(
 $('#club-clear').addEventListener('click',()=>run(async()=>{await api('member/history','DELETE');await refreshLists();text('#club-status','Account history cleared.')}));
 $('#member-password').addEventListener('submit',event=>{event.preventDefault();void run(async()=>{const e=event.target.elements;accept(await api('member/password','POST',{currentPassword:e.currentPassword.value,newPassword:e.newPassword.value}));event.target.reset();text('#club-status','Password updated. Other sessions have been signed out.')},event.submitter)});
 $('#member-delete').addEventListener('submit',event=>{event.preventDefault();void run(async()=>{const e=event.target.elements;accept(await api('member/account','DELETE',{password:e.password.value,confirmation:e.confirmation.value}));event.target.reset();$('#club-favorites').replaceChildren();$('#club-history').replaceChildren();text('#club-summary','Account deleted. Your next chapter is yours.')},event.submitter)});
-void run(async()=>{accept(await api('auth/session'));if(member){await checkIn();await refreshLists()}});
+void run(async()=>{accept(await api('auth/session'));if(member){await checkIn();await refreshLists()}}).finally(()=>{document.documentElement.dataset.memberReady='true';window.dispatchEvent(new Event('member-ready'))});
 

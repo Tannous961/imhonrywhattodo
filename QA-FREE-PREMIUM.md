@@ -92,3 +92,14 @@ Le lot est validé lorsque :
 - [ ] le mode démo Wingman est explicitement signalé ;
 - [ ] `npm test`, `npm run check` et le build Next.js passent.
 
+
+## Free journey regression — verified locally
+
+- Fixed inactive Free plan CTA; it now opens /account.
+- Fixed account actions routing to Premium or scrolling to hidden account panels.
+- Account opening waits for the member session and adult confirmation.
+- Restored visible result cards on Decision, Roulette and Wingman routes.
+- Browser verification: Free signup, 25 initial points, Roulette, accepted/completed challenge, Wingman template, favourite, four-step Decision Machine.
+- Verified 75 lifetime points: 20 welcome + 55 daily cap, First Move badge and persistent favourite.
+- Temporary browser test account deleted through the UI.
+- Next production build passed. Live AI and paid subscription excluded (not configured).
