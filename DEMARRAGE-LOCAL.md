@@ -5,7 +5,7 @@
 3. Ouvrez **http://localhost:4173**.
 4. À l’entrée, confirmez que vous avez au moins 18 ans, ou choisissez **Leave**. Le site est masqué avant ce choix. La confirmation est mémorisée dans l’onglet pour la session, sans cookie ; ce n’est pas une vérification d’identité ou d’âge.
 
-Le lanceur utilise Node.js 24 ou plus récent, installé sur l’ordinateur ou fourni par Codex si disponible. Aucun paquet supplémentaire n’est nécessaire. Pour arrêter l’application, faites Ctrl+C dans la fenêtre de démarrage.
+Le lanceur utilise Node.js 22.14 ou plus récent, installé sur l’ordinateur ou fourni par Codex si disponible. Node.js 24 est recommandé pour Vercel. Aucun paquet supplémentaire n’est nécessaire. Pour arrêter l’application, faites Ctrl+C dans la fenêtre de démarrage.
 
 Le nouveau bandeau utilise votre vidéo sans aucune piste audio : descendez pour avancer dans le clip, remontez pour revenir en arrière. Le bouton Pause animation permet de figer l’image. Le réglage de réduction des animations de l’appareil est respecté.
 

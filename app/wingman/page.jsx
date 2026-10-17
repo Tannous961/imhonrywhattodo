@@ -1,0 +1,1 @@
+import LegacyShell from '../legacy-shell';export default function Wingman(){return <LegacyShell route="wingman"/>}

@@ -2,5 +2,7 @@
 .env.*
 !.env.example
 data/
+data-e2e/
 node_modules/
+.next*/
 *.log

@@ -91,6 +91,36 @@ Permettre de convertir une suggestion Wingman en action privée après validatio
 
 ## Lot 3 — Préparation du lancement
 
+### US-12 — Pages dédiées et gestion isolée — Terminée
+
+En tant que visiteur, je veux une page dédiée à chaque expérience tout en retrouvant exactement la direction artistique validée.
+
+Critères d’acceptation :
+
+- `/` présente l’accueil, le héros et les trois entrées principales.
+- `/decision`, `/roulette` et `/wingman` isolent leur expérience respective.
+- Le dashboard principal ne contient plus le panneau complet Chaos Club.
+- `/account` regroupe le compte, les points, badges, récompenses, favoris, historique et paramètres.
+- `/challenges` affiche uniquement le défi actif et l’historique des défis.
+- La navigation utilise de vraies URL Next.js.
+- Les composants, couleurs, illustrations, animations et comportements existants restent inchangés.
+
+Validation : les huit routes sont générées par le build Next.js ; les espaces de gestion sont isolés par route en conservant les composants visuels historiques.
+
+### US-11 — Chaos Club sous Next.js — Terminée
+
+En tant que membre, je veux accéder directement à mon compte et à mes défis depuis de vraies routes sans perdre l’interface validée.
+
+Critères d’acceptation :
+
+- `/account` ouvre la création de compte ou le club du membre connecté.
+- `/challenges` ouvre le club et sa zone de défis.
+- L’écran 18+ reste prioritaire lors d’un accès direct.
+- Les comptes, sessions, points, favoris, historique, récompenses et défis utilisent toujours l’API sécurisée et SQLite.
+- Le design existant reste inchangé.
+
+Validation : routes Next.js compilées, parcours HTTP des comptes couvert par les tests, et ouverture directe contrôlée dans le navigateur.
+
 ### US-09 — Authentification publique récupérable — À faire
 
 Remplacer le code local de récupération par une authentification avec email vérifié avant la mise en ligne publique.

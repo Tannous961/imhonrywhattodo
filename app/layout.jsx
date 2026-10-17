@@ -1,0 +1,2 @@
+export const metadata={title:'IMHORNY WHATTODO.COM',description:'Bad ideas. Good times. Zero judgment.'};
+export default function RootLayout({children}){return <html lang="en"><head><link rel="icon" href="/mascot.svg"/><link rel="stylesheet" href="/styles.css?v=8"/><link rel="stylesheet" href="/routes.css?v=8"/></head><body className="age-pending">{children}</body></html>}

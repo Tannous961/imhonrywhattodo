@@ -1,0 +1,14 @@
+/* Page composition only. All visual styling remains in styles.css. */
+.route-home .play-toolbar,.route-home .playground,.route-home #result,.route-home #club,.route-home .history-panel{display:none!important}
+.route-decision .hero-scroll,.route-decision .feature-cards,.route-decision .benefits,.route-decision .club-teaser,.route-decision .share-banner,.route-decision .history-panel,.route-decision #club,.route-decision #result{display:none!important}
+.route-decision .playground{grid-template-columns:minmax(0,900px);justify-content:center}.route-decision .roulette-module,.route-decision .wingman-module{display:none!important}
+.route-roulette .hero-scroll,.route-roulette .feature-cards,.route-roulette .benefits,.route-roulette .club-teaser,.route-roulette .share-banner,.route-roulette .history-panel,.route-roulette #club,.route-roulette #result{display:none!important}
+.route-roulette .playground{grid-template-columns:minmax(0,900px);justify-content:center}.route-roulette .decision-module,.route-roulette .wingman-module{display:none!important}
+.route-wingman .hero-scroll,.route-wingman .feature-cards,.route-wingman .benefits,.route-wingman .club-teaser,.route-wingman .share-banner,.route-wingman .history-panel,.route-wingman #club,.route-wingman #result{display:none!important}
+.route-wingman .playground{grid-template-columns:minmax(0,900px);justify-content:center}.route-wingman .decision-module,.route-wingman .roulette-module{display:none!important}
+.route-account .hero-scroll,.route-account .feature-cards,.route-account .benefits,.route-account .club-teaser,.route-account .play-toolbar,.route-account .playground,.route-account #result,.route-account .history-panel,.route-account .share-banner{display:none!important}
+.route-challenges .hero-scroll,.route-challenges .feature-cards,.route-challenges .benefits,.route-challenges .club-teaser,.route-challenges .play-toolbar,.route-challenges .playground,.route-challenges #result,.route-challenges .history-panel,.route-challenges .share-banner{display:none!important}
+.route-account main,.route-challenges main{min-height:calc(100vh - 78px);padding-top:34px}
+.route-account #club,.route-challenges #club{margin-top:0}
+.route-page:not(.route-home) .play-toolbar{margin-top:24px}
+@media(max-width:760px){.route-decision .playground,.route-roulette .playground,.route-wingman .playground{grid-template-columns:minmax(0,1fr)}}

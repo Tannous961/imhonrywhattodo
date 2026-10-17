@@ -1,9 +1,16 @@
 import http from 'node:http';
+import next from 'next';
 import {createApplication,configuration} from './app.mjs';
 const config=configuration();
 const port=Number(process.env.PORT||4173),host=process.env.HOST||'127.0.0.1';
 const app=createApplication({config});
-const server=http.createServer(app.handler);
+const web=next({dev:process.env.NODE_ENV!=='production',hostname:host,port});
+await web.prepare();
+const render=web.getRequestHandler();
+const server=http.createServer((req,res)=>{
+ const pathname=new URL(req.url,'http://localhost').pathname;
+ return pathname.startsWith('/api/')||pathname==='/healthz'?app.handler(req,res):render(req,res);
+});
 server.requestTimeout=30000;server.headersTimeout=10000;server.maxRequestsPerSocket=100;
 server.once('error',error=>{
  app.close();

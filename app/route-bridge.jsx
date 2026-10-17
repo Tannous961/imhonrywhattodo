@@ -1,0 +1,3 @@
+'use client';
+import {useEffect} from 'react';
+export default function RouteBridge({route}){useEffect(()=>{let timer;const open=()=>{timer=setTimeout(()=>{if(route==='account'||route==='challenges'){const link=document.querySelector('#member-open');link?.addEventListener('click',event=>event.preventDefault(),{once:true});link?.click()}else if(route!=='home')document.getElementById(route)?.scrollIntoView({block:'start'})},350)};const gate=document.querySelector('#age-enter');if(document.body.classList.contains('age-pending'))gate?.addEventListener('click',open,{once:true});else open();return()=>{clearTimeout(timer);gate?.removeEventListener('click',open)}},[route]);return null}

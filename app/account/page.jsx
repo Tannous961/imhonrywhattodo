@@ -1,0 +1,1 @@
+import LegacyShell from '../legacy-shell';export default function Account(){return <LegacyShell route="account"/>}

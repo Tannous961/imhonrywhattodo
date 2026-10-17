@@ -1,0 +1,1 @@
+import LegacyShell from '../legacy-shell';export default function Challenges(){return <LegacyShell route="challenges"/>}
