@@ -56,6 +56,7 @@ export function createApplication({config=configuration(),store=createStore(conf
    if(route==='/api/billing/checkout'&&req.method==='POST'){const current=members.session(req);if(!current)throw Object.assign(Error('Sign in to continue.'),{status:401});return send(res,200,await billing.checkout(current.user_id))}
    if(route==='/api/billing/portal'&&req.method==='POST'){const current=members.session(req);if(!current)throw Object.assign(Error('Sign in to continue.'),{status:401});return send(res,200,await billing.portal(current.user_id))}
    if(route==='/api/billing/webhook'&&req.method==='POST')return send(res,501,{error:'Stripe webhook adapter is not configured.'});
+   if(req.method==='GET'&&route==='/api/billing/status')return send(res,200,{configured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env.STRIPE_PRICE_ID)});
    if(req.method==='GET'&&route==='/api/status')return send(res,200,{version:'7.0.0',mode:config.key?'live':'demo',localOnly:loopback(config.publicURL),shareDays:config.shareDays,limits:{hourly:config.hourly,daily:config.daily}});
    if(req.method==='GET'&&route==='/healthz')return send(res,200,{ok:true});
    if(route==='/api/wingman'&&req.method==='POST'){
@@ -120,3 +121,4 @@ export function createApplication({config=configuration(),store=createStore(conf
  }
  return {handler,close:()=>store.close()};
 }
+
