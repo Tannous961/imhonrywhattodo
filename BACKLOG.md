@@ -103,3 +103,8 @@ Tester les parcours +18, compte, quotas, achat, webhook, annulation, restauratio
 4. US-20/US-23/US-24 : fidélité, partage et mesure.
 5. US-25 à US-27 : confiance et mise en production.
 
+
+### Firebase migration — shared links
+- server/firebase-shares.mjs added for Firestore ihw_shares storage, bounded payloads, hashed deletion tokens and TTL checks.
+- Integration into the Firebase route dispatcher remains pending.
+
