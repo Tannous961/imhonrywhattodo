@@ -5,3 +5,7 @@ data
 data-e2e
 *.log
 test
+.next*
+node_modules
+.git
+.vercel

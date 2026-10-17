@@ -1,26 +1,27 @@
-# Firebase migration
+# Firebase — état de la migration
 
-Web application configured for project `freelance-1234`.
+Projet : freelance-1234. Configuration Web publique dans lib/firebase/client.js ; accès Admin uniquement côté serveur dans lib/firebase/admin.js.
 
-## Console setup
+## Fonctionnel
 
-1. Authentication → Sign-in method → enable Email/Password.
-2. Authentication → Settings → Authorized domains: add localhost and the exact deployed domain.
-3. Create Cloud Firestore in production mode. Choose the database location deliberately.
-4. Configure server-only FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY in the hosting environment. Never paste the private key into chat or commit it.
+- Inscription email/mot de passe avec confirmation 18+, connexion, récupération email, changement du mot de passe, déconnexion et suppression.
+- Session Firebase HttpOnly, Secure en production, SameSite=Strict et contrôle d'origine.
+- Firestore ihw_members : profils, points, niveaux, badges, récompenses, préférences, favoris, historique et défis.
+- Firestore ihw_shares : liens, expiration, hachage des jetons de suppression et métadonnées sociales. Le seul ancien lien SQLite encore valide a été importé en préservant son ID et son jeton.
+- Firestore ihw_limits : réservations atomiques des quotas avant les appels IA.
+- Firestore ihw_metrics : compteurs quotidiens agrégés de création de compte, première activité, retour, intérêt Premium et limite atteinte.
+- Wingman live : OpenRouter, modèle openai/gpt-4o-mini, points serveur. Aucune clé privée dans Git.
 
-## Current implementation status
+## Validation
 
-SDK configuration is prepared in lib/firebase/client.js and lib/firebase/admin.js.
-Email account forms now use Firebase Authentication through server REST calls and verified Firebase session cookies. Member endpoints store profiles, points, rewards, favourites, history and challenges in Firestore transactions under ihw_members.
-The local server and Next API both route member/auth requests to Firebase before legacy SQLite.
-SQLite is still used for legacy shared results and live AI request budgets. Live AI reward attribution needs a follow-up migration; the template demo uses Firestore activities.
-No existing account or points data has been copied or deleted.
-Do not publish new restrictive Firestore rules into this shared project until its existing applications have been reviewed.
+33 tests automatisés passent. Tests Firebase réels réussis en local, préproduction et production : sessions, accès privés, points, origine, récupération/changement de mot de passe, partages et suppression. Appel OpenRouter réel et points associés validés. Comptes QA supprimés. npm audit : 0 vulnérabilité.
 
-Validation: build passed; canonical-content and points tests passed; concurrent real Firestore check-ins grant points once. Temporary test profile deleted.
-End-to-end account registration is currently blocked by Firebase PASSWORD_LOGIN_DISABLED. Enable Email/Password in the freelance-1234 project before retesting.
-Old SQLite accounts are retained locally and are not automatically transferred to Firebase.
+Production : https://imhonrywhattodo-zeta.vercel.app
 
-## Migration complémentaire du 18 octobre 2026
-Les API actives de production utilisent désormais Firestore pour les liens et quotas également. Le Wingman live utilise OpenRouter avec une clé serveur, des quotas transactionnels et une attribution de points serveur. Les anciens fichiers SQLite sont conservés uniquement comme données historiques locales. Voir DEPLOIEMENT-VERCEL.md et BACKLOG.md pour la validation et les limites de migration.
+## Reste d'exploitation
+
+Le compte de service ne dispose pas de datastore.indexes.update. Activer depuis la console Firestore le TTL du champ expiresAt sur ihw_limits et ihw_shares. Les liens expirés sont déjà refusés immédiatement à la lecture.
+
+Les anciens comptes SQLite restent dans la base locale et ne sont pas automatiquement importés dans Firebase Authentication. Le reste du projet Firebase partagé n'a pas été modifié.
+
+Voir DEPLOIEMENT-VERCEL.md pour les variables serveur et la procédure de déploiement.

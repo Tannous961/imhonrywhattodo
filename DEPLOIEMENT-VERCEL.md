@@ -11,6 +11,6 @@ The active API now uses Firestore; no DATA_DIR or SQLite volume is needed.
 
 Free live Wingman: 5 attempts/day per authenticated account. Premium-ready limit: 50. Global budget: 100 attempts/day. Failures after reservation consume an attempt; at most 240 output tokens per call. Provider failures never silently switch to demo. Demo templates remain available.
 
-Counters include only UTC day and aggregate event counts. No email, raw IP, chat or input text is stored in metrics. Abuse/quota documents use hashed identifiers and TTL, separate from metrics. The authenticated admin-only GET /api/admin/metrics returns today's totals; the Firebase account must have an admin custom claim assigned by an authorized administrator. No admin link appears in the member dashboard.
+Counters include only UTC day and aggregate event counts (including return visits on a later UTC day). No email, raw IP, chat or input text is stored in metrics. Abuse/quota documents use hashed identifiers and TTL, separate from metrics. The authenticated admin-only GET /api/admin/metrics returns today's totals; the Firebase account must have an admin custom claim assigned by an authorized administrator. No admin link appears in the member dashboard.
 
-Old SQLite data is retained locally but is no longer used by the active API. New shares use Firestore. Older SQLite share links are not automatically imported.
+Old SQLite data is retained locally but is no longer used by the active API. New shares use Firestore. The unexpired legacy share was imported using scripts/migrate-shares.mjs --apply; its ID and deletion token hash were preserved.

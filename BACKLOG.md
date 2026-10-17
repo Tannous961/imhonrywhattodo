@@ -114,7 +114,7 @@ Tester les parcours +18, compte, quotas, achat, webhook, annulation, restauratio
 ### US-FB-01 — Stockage de production Firestore — Terminée localement
 - API active sans SQLite : comptes, points, défis, favoris, historique, liens et quotas.
 - Liens avec jeton de suppression haché, expiration vérifiée et métadonnées sociales.
-- Anciens comptes/liens SQLite conservés localement, sans import automatique.
+- Anciens comptes SQLite conservés localement. Le lien partagé encore valide a été importé dans Firestore, sans modifier la source.
 - À configurer en exploitation : TTL Firestore ihw_limits.expiresAt et ihw_shares.expiresAt.
 
 ### US-FB-02 — Tests comptes et accès privés — Terminée localement
@@ -130,13 +130,13 @@ Tester les parcours +18, compte, quotas, achat, webhook, annulation, restauratio
 - Les erreurs fournisseur sont explicites ; le mode démo reste sélectionnable et identifié.
 
 ### US-METRICS-01 — Conversions agrégées — Implémentée
-- Comptages quotidiens account_created, first_activity, premium_view, limit_reached dans ihw_metrics.
+- Comptages quotidiens account_created, first_activity, return_visit, premium_view, limit_reached dans ihw_metrics.
 - Pas de texte, email ou IP brute dans les métriques. Pas de cookies publicitaires.
 - Endpoint admin séparé /api/admin/metrics protégé par custom claim Firebase admin.
 - Stripe et événements de paiement restent différés.
 
-### US-DEPLOY-01 — Vercel — En attente d'authentification CLI vérifiée
+### US-DEPLOY-01 — Vercel — Terminée
 - Build Next.js réussi, script sécurisé de configuration des variables et guide DEPLOIEMENT-VERCEL.md prêts.
-- Connexion CLI non confirmée malgré demande d'autorisation navigateur ; ne pas considérer le déploiement comme effectué.
+- Connexion CLI confirmée ; secrets Preview/Production configurés. Préproduction et production validées par tests Firebase/OpenRouter réels. URL de production : https://imhonrywhattodo-zeta.vercel.app.
 
 Validation : scripts/firebase-qa.mjs (Firebase réel), QA_LIVE=true (un appel IA payant), tests unitaires Firebase/OpenRouter, build production. Comptes de test supprimés. npm audit : 0 vulnérabilité après correction gRPC.
