@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {createHmac,randomBytes,createHash} from 'node:crypto';
 import {createStore} from './store.mjs';
 import {generateWingman,validateWingman} from './wingman.mjs';
+import {createBillingService} from './billing-service.mjs';
 import {createMemberService} from './member-service.mjs';
 const publicRoot=fileURLToPath(new URL('../public/',import.meta.url));
 const files=new Set(['index.html','styles.css','app.js','layout.js','age-gate.js','core.mjs','member.mjs','hero-scroll.mjs','content.mjs','mascot.svg','assets/hero-scroll.mp4','assets/hero-scroll-poster.jpg','assets/hero.png','assets/decision.png','assets/roulette.png','assets/wingman.png']);
@@ -17,7 +18,7 @@ export function configuration(env=process.env) {
  const base=new URL(env.PUBLIC_URL||`http://localhost:${env.PORT||4173}`);
  if(!['http:','https:'].includes(base.protocol)||base.username||base.password||base.pathname!=='/'||base.search||base.hash)throw Error('PUBLIC_URL must be an HTTP(S) origin');
  if(env.NODE_ENV==='production'&&!path.isAbsolute(env.DATA_DIR||''))throw Error('Production requires DATA_DIR to be an absolute path to persistent storage outside the deployment directory.');
- return {publicURL:base.origin,dataDir:env.DATA_DIR||'./data',key:env.OPENAI_API_KEY||'',model:env.OPENAI_MODEL||'gpt-5.4-mini',trustProxy:env.TRUST_PROXY==='true',hourly:integer('AI_HOURLY_LIMIT',10),daily:integer('AI_DAILY_LIMIT',20),globalDaily:integer('AI_GLOBAL_DAILY_LIMIT',100),shareDays:integer('SHARE_DAYS',30,365)};
+ return {publicURL:base.origin,dataDir:env.DATA_DIR||'./data',key:env.OPENAI_API_KEY||'',model:env.OPENAI_MODEL||'gpt-5.4-mini',trustProxy:env.TRUST_PROXY==='true',hourly:integer('AI_HOURLY_LIMIT',10),daily:integer('AI_DAILY_LIMIT',20),globalDaily:integer('AI_GLOBAL_DAILY_LIMIT',100),shareDays:integer('SHARE_DAYS',30,365),stripeKey:env.STRIPE_SECRET_KEY||'',stripePrice:env.STRIPE_PRICE_MONTHLY||''};
 }
 export function createApplication({config=configuration(),store=createStore(config.dataDir),fetcher=fetch}={}) {
  let inFlight=0,requests=0;
@@ -34,6 +35,7 @@ export function createApplication({config=configuration(),store=createStore(conf
  };
  const checkRate=(res,result)=>{if(result.allowed)return true;res.setHeader('Retry-After',String(result.retry));send(res,429,{error:'Too much chaos at once. Try again later.'});return false};
  const members=createMemberService({store,config,send,readJSON,rate,checkRate});
+ const billing=createBillingService({store,config});
  async function handler(req,res) {
   res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('X-Frame-Options','DENY');
   res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
@@ -50,6 +52,10 @@ export function createApplication({config=configuration(),store=createStore(conf
      if(!checkRate(res,rate(req,'requests',[[3600000,180]])))return;
    }
    if(await members.handle(req,res,route))return;
+   if(route==='/api/billing/status'&&req.method==='GET'){const current=members.session(req);return send(res,200,current?billing.status(current.user_id):{premiumUntil:null,active:false,subscription:null})}
+   if(route==='/api/billing/checkout'&&req.method==='POST'){const current=members.session(req);if(!current)throw Object.assign(Error('Sign in to continue.'),{status:401});return send(res,200,await billing.checkout(current.user_id))}
+   if(route==='/api/billing/portal'&&req.method==='POST'){const current=members.session(req);if(!current)throw Object.assign(Error('Sign in to continue.'),{status:401});return send(res,200,await billing.portal(current.user_id))}
+   if(route==='/api/billing/webhook'&&req.method==='POST')return send(res,501,{error:'Stripe webhook adapter is not configured.'});
    if(req.method==='GET'&&route==='/api/status')return send(res,200,{version:'7.0.0',mode:config.key?'live':'demo',localOnly:loopback(config.publicURL),shareDays:config.shareDays,limits:{hourly:config.hourly,daily:config.daily}});
    if(req.method==='GET'&&route==='/healthz')return send(res,200,{ok:true});
    if(route==='/api/wingman'&&req.method==='POST'){
