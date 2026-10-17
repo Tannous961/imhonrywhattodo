@@ -146,3 +146,6 @@ Validation : scripts/firebase-qa.mjs (Firebase réel), QA_LIVE=true (un appel IA
 - Même permission `datastore.indexes.update` nécessaire pour `ihw_shares.expiresAt`. Expiration logique déjà appliquée par le serveur.
 - Rotation des secrets préparée ; ne pas révoquer une clé avant validation et déploiement de sa remplaçante.
 - Synchronisation Git encore bloquée par le gestionnaire d’identifiants Windows dans cet environnement.
+- Nouvelles clés Firebase et OpenRouter créées avec autorisation, validées sans affichage et configurées sur Vercel Preview/Production.
+- Déploiement production A74Nj2qivXyvfQnM7FhTVPiX4vfh réussi ; parcours Firebase et appel OpenRouter réel réussis avec les remplaçantes. Clé OpenRouter plafonnée à 10 USD/mois, expiration un an.
+- Anciennes clés : révocation préparée, confirmation finale demandée après QA.
