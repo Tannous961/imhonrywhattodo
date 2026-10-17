@@ -24,6 +24,19 @@ Source : [Ajouter une application Node.js chez Hostinger](https://www.hostinger.
 | `AI_GLOBAL_DAILY_LIMIT` | `100` |
 | `SHARE_DAYS` | `30` |
 | `TRUST_PROXY` | `false` au départ ; voir ci-dessous |
+| `STRIPE_SECRET_KEY` | Clé secrète Stripe **test** (`sk_test_...`) stockée dans les secrets Hostinger ; laisser vide tant que le paiement n’est pas activé |
+| `STRIPE_PUBLISHABLE_KEY` | Clé publique Stripe **test** (`pk_test_...`) ; jamais une clé secrète |
+| `STRIPE_WEBHOOK_SECRET` | Secret de signature du webhook Stripe **test** (`whsec_...`) |
+| `STRIPE_PRICE_PREMIUM_MONTHLY` | Identifiant du prix mensuel Stripe en mode test (`price_...`) |
+| `STRIPE_MODE` | `test` pour la recette ; passer à `live` uniquement après validation et remplacement de toutes les clés |
+
+### Préparer Stripe en mode test
+
+1. Créez ou sélectionnez un compte Stripe de test et créez le produit/prix Premium mensuel. Ne copiez aucune clé dans Git, le navigateur ou un fichier public.
+2. Ajoutez les variables `STRIPE_*` ci-dessus uniquement dans les variables d’environnement Hostinger (et dans un `.env` local ignoré par Git).
+3. Configurez un endpoint webhook de test vers l’URL HTTPS de l’application, avec les événements d’abonnement nécessaires. Copiez le secret `whsec_...` fourni par Stripe dans `STRIPE_WEBHOOK_SECRET`.
+4. Utilisez les cartes de test Stripe et vérifiez création, renouvellement simulé, annulation, échec et rejeu d’un webhook. Un retour navigateur seul ne doit jamais activer Premium.
+5. Après validation QA, remplacez les quatre valeurs par leurs équivalents Live, passez `STRIPE_MODE=live`, redéployez puis effectuez un achat réel contrôlé. Ne mélangez jamais prix, clés et webhooks Test/Live.
 
 **Point à valider dans votre offre :** Hostinger précise que `hbuilds/` et `public_html` sont remplacés aux déploiements. La base SQLite ne doit pas y être stockée. Faites confirmer un dossier privé qui survit aux redéploiements et reste accessible au processus Node.js ; son chemin dépend de votre compte. S’il n’existe pas sur votre offre, cette configuration SQLite ne convient pas : utilisez votre VPS avec un volume durable, ou adaptez la couche de stockage à la base MySQL Hostinger avant la publication. Ne présentez pas des liens comme durables sans avoir vérifié ce point.
 
