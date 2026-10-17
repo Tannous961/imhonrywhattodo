@@ -21,3 +21,6 @@ Do not publish new restrictive Firestore rules into this shared project until it
 Validation: build passed; canonical-content and points tests passed; concurrent real Firestore check-ins grant points once. Temporary test profile deleted.
 End-to-end account registration is currently blocked by Firebase PASSWORD_LOGIN_DISABLED. Enable Email/Password in the freelance-1234 project before retesting.
 Old SQLite accounts are retained locally and are not automatically transferred to Firebase.
+
+## Migration complémentaire du 18 octobre 2026
+Les API actives de production utilisent désormais Firestore pour les liens et quotas également. Le Wingman live utilise OpenRouter avec une clé serveur, des quotas transactionnels et une attribution de points serveur. Les anciens fichiers SQLite sont conservés uniquement comme données historiques locales. Voir DEPLOIEMENT-VERCEL.md et BACKLOG.md pour la validation et les limites de migration.

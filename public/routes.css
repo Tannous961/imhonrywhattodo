@@ -12,3 +12,4 @@
 .route-account #club,.route-challenges #club{margin-top:0}
 .route-page:not(.route-home) .play-toolbar{margin-top:24px}
 @media(max-width:760px){.route-decision .playground,.route-roulette .playground,.route-wingman .playground{grid-template-columns:minmax(0,1fr)}}
+.route-shared .hero-scroll,.route-shared .feature-cards,.route-shared .benefits,.route-shared .club-teaser,.route-shared .playground,.route-shared .share-banner,.route-shared .history-panel,.route-shared #club{display:none!important}

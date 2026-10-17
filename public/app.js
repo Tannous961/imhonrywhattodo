@@ -11,7 +11,7 @@ let backend={mode:'offline',shareDays:30,localOnly:isLocalOrigin(location.origin
 const networkError='Cannot reach the local server. Keep start.cmd running, then try again.';
 async function requestJSON(url,options={}){
  try{
-  const response=await fetch(url,{...options,signal:options.signal||AbortSignal.timeout(10000)});
+  const response=await fetch(url,{...options,signal:options.signal||AbortSignal.timeout(30000)});
   let body;try{body=await response.json()}catch{throw new Error('The server returned an unreadable reply. Please retry.')}
   if(!response.ok)throw new Error(body.error||'Something went wrong. Please retry.');
   return body;
@@ -20,9 +20,9 @@ async function requestJSON(url,options={}){
 function modeUI(){
  const demo=$('#use-demo').checked;
  $('#wingman-form [type=submit]').setAttribute('aria-label',demo?'Generate a demo reply':'Generate an AI reply');
- $('.wingman-settings>span').textContent=demo?'Local templates · no live AI':'Live AI · context sent to OpenAI';
+ $('.wingman-settings>span').textContent=demo?'Local templates · no live AI':'Live AI · context sent through OpenRouter';
  $('#adult-label').hidden=demo;
- $('#wingman-status').textContent=backend.mode==='offline'?'Local server unavailable. The template demo still works.':demo?'Template demo · your context stays in this browser':`Live AI · up to ${backend.limits.hourly} requests/hour and ${backend.limits.daily}/day per connection`;
+ $('#wingman-status').textContent=backend.mode==='offline'?'Local server unavailable. The template demo still works.':demo?'Template demo · your context stays in this browser':`Live AI · sign in · ${backend.limits.daily} requests/day per free account`;
  $('#use-demo').disabled=wingmanBusy||backend.mode!=='live';
 }
 async function checkService(){

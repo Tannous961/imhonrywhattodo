@@ -9,7 +9,7 @@
   document.body.classList.remove('age-pending');
   document.querySelector('#adult-confirm').checked=true;
   if(gate.open)gate.close();
-  window.dispatchEvent(new Event('adult-confirmed'));
+  globalThis.dispatchEvent?.(new Event('adult-confirmed'));
   if(remember){const heading=document.querySelector('.hero h1');heading.tabIndex=-1;heading.focus({preventScroll:true})}
  }
  let confirmed=false;try{confirmed=sessionStorage.getItem(key)==='yes'}catch{}

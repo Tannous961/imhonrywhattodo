@@ -6,3 +6,6 @@ data-e2e/
 node_modules/
 .next*/
 *.log
+
+.vercel-auth/
+.vercel/

@@ -1,0 +1,7 @@
+.env
+.env.*
+.vercel-auth
+data
+data-e2e
+*.log
+test
