@@ -1,131 +1,105 @@
 # Backlog produit — imhornywhattodo.com
 
-Mise à jour : 17 octobre 2026. Le projet reste local pendant ce lot.
+Mise à jour : 17 octobre 2026. Roadmap orientée revenus, avec conservation stricte de la direction artistique validée.
+
+## Objectif produit
+
+Transformer les expériences gratuites (Decision Machine, Horny Roulette et AI Wingman) en une habitude de divertissement adulte, puis convertir les membres actifs en abonnés Premium. Le design Pop & Playful, les couleurs, illustrations, animations et le ton existants restent inchangés.
 
 ## Règles de suivi
 
 - `À faire` : non commencé.
 - `En cours` : développement ou validation en cours.
 - `Terminée` : critères d’acceptation validés par les tests et le navigateur.
-- Les points sont toujours décidés côté serveur. Aucun texte libre n’est enregistré sans consentement.
+- Les points, limites, droits Premium et récompenses sont décidés côté serveur.
+- Aucun témoignage, chiffre d’utilisateurs ou avis n’est inventé.
+- Les données sensibles sont minimisées, privées et supprimables.
 
-## Lot 1 — Challenge System v1
+## Lot 0 — Socle existant (terminé)
 
-### US-01 — Accepter un défi Roulette — Terminée
+### US-01 à US-05 — Défis, points, badges et historique — Terminées
 
-En tant que membre, je veux accepter le résultat actuel de la Roulette comme défi afin de garder un objectif clair.
+Le membre peut accepter un défi Roulette, gérer son défi actif, recevoir jusqu’à 15 points par accomplissement (plafond quotidien serveur de 55), consulter ses 30 dernières actions et débloquer les badges `First Move`, `Roulette Regular` et `Wingman Apprentice`.
 
-Critères d’acceptation :
+### US-11/US-12 — Routes Next.js et pages isolées — Terminées
 
-- Le bouton `Accept challenge` apparaît uniquement sur un résultat Roulette reconnu.
-- La création est réservée aux membres connectés et contrôlée côté serveur.
-- Un membre ne peut avoir qu’un seul défi actif.
-- Le défi actif reste disponible après rechargement.
+Les expériences `/decision`, `/roulette`, `/wingman`, ainsi que `/account` et `/challenges`, sont accessibles via de vraies routes tout en conservant exactement le design validé et la priorité de l’écran +18.
 
-Validation : API et interface testées ; une Roulette reconnue crée un défi actif persistant, une seconde acceptation renvoie un conflit contrôlé.
+## Lot 1 — MVP rétention et compte (priorité immédiate)
 
-### US-02 — Gérer le défi actif — Terminée
+### US-13 — Créer un compte et se connecter — À faire
 
-En tant que membre, je veux voir, terminer ou abandonner mon défi actif.
+En tant que visiteur, je veux créer un compte email et me reconnecter afin de conserver mes points, défis, badges et conversations Wingman.
 
-Critères d’acceptation :
+Critères : inscription/connexion/déconnexion sécurisées côté serveur ; validation +18 et consentement avant activation ; erreurs lisibles sans révéler si un email existe ; réutilisation des composants visuels existants.
 
-- La carte du défi actif est visible dans Chaos Club.
-- `Completed` termine le défi ; `Skip` l’abandonne.
-- L’action est idempotente et isolée par membre.
-- Une confirmation est demandée avant `Skip`.
+### US-14 — Profil, suppression et récupération — À faire
 
-Validation : carte active affichée dans Chaos Club ; fin idempotente, abandon confirmé et isolation par membre couverts par les tests.
+Le membre peut modifier son profil, demander un lien de récupération, exporter ses données et supprimer son compte avec suppression en cascade.
 
-### US-03 — Récompenser l’accomplissement — Terminée
+### US-15 — Portefeuille de points et séries — À faire
 
-En tant que membre, je veux recevoir des points lorsque je termine un défi afin de progresser.
+Afficher solde, journal des gains, série quotidienne et prochaine récompense. Les écritures sont idempotentes, auditables et refusent toute modification côté client.
 
-Critères d’acceptation :
+### US-16 — Limites gratuites explicites — À faire
 
-- 15 points maximum pour un défi terminé, une fois par jour UTC.
-- Accepter, consulter ou abandonner un défi ne donne aucun point.
-- Un défi déjà clos ne peut pas attribuer de nouveaux points.
-- Le plafond quotidien passe de 40 à 55 points et reste expliqué dans l’interface.
+Définir les quotas journaliers (messages Wingman, spins, défis) côté serveur, afficher le compteur restant et proposer une entrée Premium à l’atteinte d’une limite, sans bloquer les fonctions déjà acquises.
 
-Validation : `Completed` attribue 15 points une fois par jour, le second appel donne 0, le plafond 55 est rendu depuis le serveur.
+## Lot 2 — Monétisation Premium
 
-### US-04 — Historique des défis — Terminée
+### US-17 — Offre Premium et paywall cohérent — À faire
 
-En tant que membre, je veux revoir mes défis terminés ou abandonnés.
+Créer une page `/premium` et des états de paywall intégrés aux expériences, avec bénéfices réels : quotas augmentés, personnalités Wingman supplémentaires, défis exclusifs et historique étendu. Aucun faux chiffre social.
 
-Critères d’acceptation :
+### US-18 — Paiement récurrent — À faire
 
-- Les 30 derniers défis sont visibles dans le compte.
-- Le statut et la date sont affichés.
-- Les données sont privées et supprimées avec le compte.
+Intégrer Stripe Checkout en priorité avec abonnement mensuel, annulation, portail client, webhooks signés et synchronisation du statut côté serveur.
 
-Validation : historique privé limité aux 30 entrées affichées les plus récentes ; suppression en cascade via la relation au compte.
+### US-19 — Accès Premium et restauration — À faire
 
-### US-05 — Premiers badges privés — Terminée
+Un abonnement actif ouvre immédiatement les avantages sur tous les appareils ; une annulation reste active jusqu’à la date de fin ; les webhooks sont rejouables sans double attribution.
 
-En tant que membre, je veux débloquer des badges afin de visualiser ma progression.
+### US-20 — Packs et récompenses de fidélité — À faire
 
-Critères d’acceptation :
+Permettre l’échange de points contre des éléments cosmétiques ou des packs de défis, avec catalogue versionné, coût affiché avant confirmation et protection contre les achats répétés.
 
-- `First Move` après un défi terminé.
-- `Roulette Regular` après 5 défis terminés.
-- `Wingman Apprentice` après 5 jours distincts de Wingman récompensés.
-- Les badges sont calculés côté serveur et visibles uniquement dans le profil.
+## Lot 3 — Activation et croissance responsable
 
-Validation : badges calculés à partir du journal serveur et des défis ; `First Move` observé immédiatement après le premier défi terminé.
+### US-21 — Défis quotidiens et hebdomadaires — À faire
 
-## Lot 2 — Progression et contenu
+Proposer des objectifs renouvelés, sans pénalité de série, avec récompenses plafonnées et catégories `Soft`, `Playful`, `Bold` (`solo`, `couple`, `date`, `social`, `self-care`).
 
-### US-06 — Difficulté et catégories de défis — À faire
+### US-22 — Transformer un résultat Wingman en défi — À faire
 
-Classer les défis en `Soft`, `Playful`, `Bold` et par contexte (`solo`, `couple`, `date`, `social`, `self-care`) avec filtres accessibles.
+Permettre de convertir une suggestion Wingman en action privée après validation explicite du membre, puis récompenser uniquement l’accomplissement vérifié.
 
-### US-07 — Défis quotidiens et hebdomadaires — À faire
+### US-23 — Résultats partageables et parrainage léger — À faire
 
-Proposer des objectifs renouvelés sans pénalité de série et avec des récompenses cosmétiques plafonnées.
+Générer une carte partageable sans données privées, avec lien court révocable et bonus de points optionnel au partage ou à l’invitation, sans spam.
 
-### US-08 — Transformer un résultat Wingman en défi — À faire
+### US-24 — Analytics de conversion respectueuses — À faire
 
-Permettre de convertir une suggestion Wingman en action privée après validation explicite du membre.
+Mesurer activation, rétention, quotas, conversion Premium et résiliation avec consentement, événements minimisés et possibilité de désactivation.
 
-## Lot 3 — Préparation du lancement
+## Lot 4 — Confiance et exploitation avant lancement public
 
-### US-12 — Pages dédiées et gestion isolée — Terminée
+### US-25 — Administration et modération — À faire
 
-En tant que visiteur, je veux une page dédiée à chaque expérience tout en retrouvant exactement la direction artistique validée.
+Isoler les pages admin, gérer le catalogue de défis, désactiver un contenu signalé et conserver un journal d’audit. Les outils admin ne sont jamais visibles dans le dashboard utilisateur.
 
-Critères d’acceptation :
+### US-26 — Sécurité, conformité et sauvegardes — À faire
 
-- `/` présente l’accueil, le héros et les trois entrées principales.
-- `/decision`, `/roulette` et `/wingman` isolent leur expérience respective.
-- Le dashboard principal ne contient plus le panneau complet Chaos Club.
-- `/account` regroupe le compte, les points, badges, récompenses, favoris, historique et paramètres.
-- `/challenges` affiche uniquement le défi actif et l’historique des défis.
-- La navigation utilise de vraies URL Next.js.
-- Les composants, couleurs, illustrations, animations et comportements existants restent inchangés.
+Ajouter politique de confidentialité, conditions d’utilisation, gestion du consentement, limitation de débit, sauvegardes SQLite chiffrées et procédure de restauration testée.
 
-Validation : les huit routes sont générées par le build Next.js ; les espaces de gestion sont isolés par route en conservant les composants visuels historiques.
+### US-27 — QA paiement et déploiement — À faire
 
-### US-11 — Chaos Club sous Next.js — Terminée
+Tester les parcours +18, compte, quotas, achat, webhook, annulation, restauration et suppression sur environnement de test, puis documenter le déploiement Hostinger/Vercel.
 
-En tant que membre, je veux accéder directement à mon compte et à mes défis depuis de vraies routes sans perdre l’interface validée.
+## Ordre d’exécution recommandé
 
-Critères d’acceptation :
-
-- `/account` ouvre la création de compte ou le club du membre connecté.
-- `/challenges` ouvre le club et sa zone de défis.
-- L’écran 18+ reste prioritaire lors d’un accès direct.
-- Les comptes, sessions, points, favoris, historique, récompenses et défis utilisent toujours l’API sécurisée et SQLite.
-- Le design existant reste inchangé.
-
-Validation : routes Next.js compilées, parcours HTTP des comptes couvert par les tests, et ouverture directe contrôlée dans le navigateur.
-
-### US-09 — Authentification publique récupérable — À faire
-
-Remplacer le code local de récupération par une authentification avec email vérifié avant la mise en ligne publique.
-
-### US-10 — Exploitation et confiance — À faire
-
-Ajouter administration de contenu, modération, sauvegardes, politique de confidentialité, conditions d’utilisation et analytics respectueuses de la vie privée.
+1. US-13 à US-16 : comptes, points et limites.
+2. US-17 à US-19 : offre et paiement Premium.
+3. US-21/US-22 : contenu qui augmente la rétention.
+4. US-20/US-23/US-24 : fidélité, partage et mesure.
+5. US-25 à US-27 : confiance et mise en production.
 
