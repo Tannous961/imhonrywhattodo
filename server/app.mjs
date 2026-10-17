@@ -1,12 +1,11 @@
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 import {createHmac,randomBytes,createHash} from 'node:crypto';
 import {createStore} from './store.mjs';
 import {generateWingman,validateWingman} from './wingman.mjs';
 import {createBillingService} from './billing-service.mjs';
 import {createMemberService} from './member-service.mjs';
-const publicRoot=fileURLToPath(new URL('../public/',import.meta.url));
+const publicRoot=path.resolve(process.cwd(),'public');
 const files=new Set(['index.html','styles.css','app.js','layout.js','age-gate.js','core.mjs','member.mjs','hero-scroll.mjs','content.mjs','mascot.svg','assets/hero-scroll.mp4','assets/hero-scroll-poster.jpg','assets/hero.png','assets/decision.png','assets/roulette.png','assets/wingman.png']);
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.mp4':'video/mp4'};
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

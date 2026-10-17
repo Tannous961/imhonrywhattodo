@@ -1,5 +1,6 @@
 import http from 'node:http';
 import next from 'next';
+import {handleFirebase} from './firebase-auth-api.mjs';
 import {createApplication,configuration} from './app.mjs';
 const config=configuration();
 const port=Number(process.env.PORT||4173),host=process.env.HOST||'127.0.0.1';
@@ -7,7 +8,8 @@ const app=createApplication({config});
 const web=next({dev:process.env.NODE_ENV!=='production',hostname:host,port});
 await web.prepare();
 const render=web.getRequestHandler();
-const server=http.createServer((req,res)=>{
+const server=http.createServer(async(req,res)=>{
+ if(await handleFirebase(req,res))return;
  const pathname=new URL(req.url,'http://localhost').pathname;
  return pathname.startsWith('/api/')||pathname==='/healthz'?app.handler(req,res):render(req,res);
 });
