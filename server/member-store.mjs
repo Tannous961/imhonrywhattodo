@@ -12,8 +12,8 @@ const digest=value=>createHash('sha256').update(value).digest('hex');
 const cleanResult=result=>({title:result.title,body:result.body,source:result.source});
 export function createMemberStore(db){
  db.exec(`PRAGMA foreign_keys=ON;
- CREATE TABLE IF NOT EXISTS members(id TEXT PRIMARY KEY,username TEXT NOT NULL UNIQUE,display_name TEXT NOT NULL,password_hash TEXT NOT NULL,recovery_hash TEXT NOT NULL,created INTEGER NOT NULL,adult_confirmed INTEGER NOT NULL,history_enabled INTEGER NOT NULL DEFAULT 0,card_style TEXT NOT NULL DEFAULT 'classic');
- CREATE TABLE IF NOT EXISTS member_sessions(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,csrf TEXT NOT NULL,expires INTEGER NOT NULL);
+ CREATE TABLE IF NOT EXISTS members(id TEXT PRIMARY KEY,username TEXT NOT NULL UNIQUE,display_name TEXT NOT NULL,password_hash TEXT NOT NULL,recovery_hash TEXT NOT NULL,created INTEGER NOT NULL,adult_confirmed INTEGER NOT NULL,history_enabled INTEGER NOT NULL DEFAULT 0,card_style TEXT NOT NULL DEFAULT 'classic',premium_until INTEGER NOT NULL DEFAULT 0);
+ CREATE TABLE IF NOT EXISTS member_usage(user_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,kind TEXT NOT NULL,bucket TEXT NOT NULL,count INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(user_id,kind,bucket)); CREATE TABLE IF NOT EXISTS member_sessions(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,csrf TEXT NOT NULL,expires INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS point_ledger(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,reason TEXT NOT NULL,bucket TEXT NOT NULL,delta INTEGER NOT NULL,created INTEGER NOT NULL,UNIQUE(user_id,reason,bucket));
  CREATE TABLE IF NOT EXISTS member_rewards(user_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,reward_id TEXT NOT NULL,created INTEGER NOT NULL,PRIMARY KEY(user_id,reward_id));
  CREATE TABLE IF NOT EXISTS member_results(user_id TEXT NOT NULL REFERENCES members(id) ON DELETE CASCADE,result_id TEXT NOT NULL,kind TEXT NOT NULL CHECK(kind IN ('favorite','history')),payload TEXT NOT NULL,created INTEGER NOT NULL,PRIMARY KEY(user_id,result_id,kind));
@@ -21,6 +21,7 @@ export function createMemberStore(db){
  CREATE INDEX IF NOT EXISTS member_result_order ON member_results(user_id,kind,created DESC);
  CREATE INDEX IF NOT EXISTS member_challenge_order ON member_challenges(user_id,updated DESC);
  CREATE UNIQUE INDEX IF NOT EXISTS member_one_active_challenge ON member_challenges(user_id) WHERE status='active';`);
+ try{db.exec('ALTER TABLE members ADD COLUMN premium_until INTEGER NOT NULL DEFAULT 0')}catch{}
  const transaction=fn=>{db.exec('BEGIN IMMEDIATE');try{const result=fn();db.exec('COMMIT');return result}catch(error){db.exec('ROLLBACK');throw error}};
  const user=id=>db.prepare('SELECT * FROM members WHERE id=?').get(id);
  function balance(id){return Number(db.prepare('SELECT COALESCE(SUM(delta),0) AS n FROM point_ledger WHERE user_id=?').get(id).n)}
@@ -69,6 +70,7 @@ export function createMemberStore(db){
    return {id:member.id,username:member.username,displayName:member.display_name,balance:balance(id),lifetime,level,nextLevel:next,ownedRewards:owned,rewards:rewards.map(reward=>({...reward,owned:owned.includes(reward.id)})),badges,preferences:{historyEnabled:!!member.history_enabled,cardStyle:member.card_style},daily:{date:day,cap:dailyCap,earned:earnedRows.reduce((sum,row)=>sum+row.delta,0),rules:Object.entries(dailyRules).map(([id,points])=>({id,points,done:earnedRows.some(row=>row.reason===id)}))},ledger:rows.map(row=>({reason:row.reason,points:row.delta,createdAt:new Date(row.created).toISOString()}))};
   },
   checkIn(id,now){return transaction(()=>award(id,'visit',now))},
+  consumeMemberUsage(id,kind,bucket,limit){return transaction(()=>{const row=db.prepare('SELECT count FROM member_usage WHERE user_id=? AND kind=? AND bucket=?').get(id,kind,bucket);const count=Number(row?.count||0);if(count>=limit)return {allowed:false,used:count,remaining:0};const next=count+1;db.prepare('INSERT INTO member_usage(user_id,kind,bucket,count) VALUES (?,?,?,?) ON CONFLICT(user_id,kind,bucket) DO UPDATE SET count=excluded.count').run(id,kind,bucket,next);return {allowed:true,used:next,remaining:limit-next}})},
   activity(id,kind,result,now=Date.now()){return transaction(()=>{
    const member=user(id);if(!member)throw Object.assign(Error('Sign in again.'),{status:401});
    if(member.history_enabled)saveResult(id,result,'history');

@@ -54,6 +54,8 @@ export function createApplication({config=configuration(),store=createStore(conf
    if(req.method==='GET'&&route==='/healthz')return send(res,200,{ok:true});
    if(route==='/api/wingman'&&req.method==='POST'){
      const input=validateWingman(await readJSON(req));
+     const memberUsage=members.consumeWingman(req);
+     if(memberUsage&&!memberUsage.allowed)return send(res,429,{code:'WINGMAN_LIMIT_REACHED',error:'Your free Wingman quota is used for today. Premium unlocks more chaos.',remaining:0,premium:memberUsage.premium});
      if(!config.key)return send(res,503,{code:'DEMO_MODE',error:'Live AI is not configured. The local template demo is available.'});
      if(inFlight>=2)return send(res,503,{error:'The Wingman is busy. Try again in a moment.'});
      if(!checkRate(res,rate(req,'ai',[[3600000,config.hourly],[86400000,config.daily],[86400000,config.globalDaily,true]])))return;

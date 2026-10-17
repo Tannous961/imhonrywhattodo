@@ -2,6 +2,7 @@ import {randomBytes,createHmac} from 'node:crypto';
 import {hashPassword,verifyPassword,validPassword,hashToken,sameSecret} from './passwords.mjs';
 import {normalizeResult} from '../public/core.mjs';
 import {plans,rouletteVariants,outcomes,lines} from '../public/content.mjs';
+import {consumeWingman} from './entitlements.mjs';
 
 const invalid=(message,status=400)=>Object.assign(Error(message),{status});
 const canonical=new Set();
@@ -125,5 +126,6 @@ export function createMemberService({store,config,send,readJSON,rate,checkRate})
  }
  return {handle,session,
   awardLive(req,result){const current=session(req);if(!hasCSRF(req,current))return null;return {pointsGranted:data.activity(current.user_id,'wingman',result),member:data.snapshot(current.user_id)}},
+  consumeWingman(req){const current=session(req);if(!current)return null;return consumeWingman(store,data.byId(current.user_id))},
  };
 }
