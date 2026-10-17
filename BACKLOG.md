@@ -140,3 +140,9 @@ Tester les parcours +18, compte, quotas, achat, webhook, annulation, restauratio
 - Connexion CLI confirmée ; secrets Preview/Production configurés. Préproduction et production validées par tests Firebase/OpenRouter réels. URL de production : https://imhonrywhattodo-zeta.vercel.app.
 
 Validation : scripts/firebase-qa.mjs (Firebase réel), QA_LIVE=true (un appel IA payant), tests unitaires Firebase/OpenRouter, build production. Comptes de test supprimés. npm audit : 0 vulnérabilité après correction gRPC.
+
+### US-OPS-02 — Purge et renouvellement des secrets — En cours
+- 18 octobre : création TTL `ihw_limits.expiresAt` tentée depuis la console Google connectée après autorisation. Refus 403 (autorisations manquantes ou insuffisantes) ; aucune règle activée.
+- Même permission `datastore.indexes.update` nécessaire pour `ihw_shares.expiresAt`. Expiration logique déjà appliquée par le serveur.
+- Rotation des secrets préparée ; ne pas révoquer une clé avant validation et déploiement de sa remplaçante.
+- Synchronisation Git encore bloquée par le gestionnaire d’identifiants Windows dans cet environnement.
