@@ -34,14 +34,16 @@ void refreshQuota();
 function renderConversation(){
  const log=$('#wingman-conversation');log.replaceChildren();
  const turns=[...conversation.messages(),...(chatPending?[{role:'user',content:chatPending}]:[])];
- if(!turns.length){const hint=document.createElement('p');hint.className='micro';hint.textContent='Say hello or tell me what’s on your mind. Your chat stays in this tab until you reload or start again.';log.append(hint)}
+ if(!turns.length){const hint=document.createElement('p');hint.className='micro';hint.textContent='Choose what you need above, or tell me where you’re stuck. Your chat stays in this tab until you reload or start again.';log.append(hint)}
  for(const turn of turns){const card=document.createElement('article');card.className='chat-turn '+turn.role;const label=document.createElement('strong');label.textContent=turn.role==='user'?'You':'Wingman';const body=document.createElement('p');body.textContent=turn.content;card.append(label,body);if(turn.role==='assistant'){const copy=document.createElement('button');copy.type='button';copy.className='back';copy.textContent='Copy reply';copy.addEventListener('click',()=>void copyText(turn.content,message=>$('#line-status').textContent=message));card.append(copy)}log.append(card)}
+ $('#coach-next').hidden=!conversation.messages().length||$('#situation').value!=='chat';
  log.scrollTop=log.scrollHeight;
 }
 function modeUI(){
  const demo=$('#use-demo').checked,chat=$('#situation').value==='chat';
  $('#wingman-conversation').hidden=!chat;$('#new-conversation').hidden=!chat;$('#new-conversation').disabled=wingmanBusy;
  $('#user-chat').hidden=chat;$('.assistant-intro').hidden=chat;$('.message-options').hidden=chat;
+ $('#coach-next').hidden=!chat||!conversation.messages().length;
  if(chat)renderConversation();
  $('#wingman-form [type=submit]').setAttribute('aria-label',demo?'Generate a demo reply':chat?'Send message to Wingman':'Generate an AI reply');
  $('.wingman-settings>span').textContent=demo?'Ready-made phrases · not personalised':chat?'Direct replies · remembers this conversation':'AI uses your situation · review before sending';
@@ -49,7 +51,7 @@ function modeUI(){
  $('#wingman-mode-help').textContent=demo?'Demo picks a ready-made phrase. It does not read your situation. Switch to AI for a personalised suggestion.':'Describe your situation below. AI will generate one suggestion; it does not send messages to anyone.';
  if(chat){$('#wingman-mode-help').textContent=demo?'Live conversation requires AI mode. For ready-made demo phrases, choose Draft a message.':'Talk naturally. Wingman remembers the last four exchanges in this tab. Each reply uses one AI request.';$('#wingman-form [type=submit]').disabled=wingmanBusy||demo;}
  $('#context').disabled=demo||wingmanBusy;
- $('label[for=context]').textContent=chat?'Your message to Wingman':'Your situation (AI mode)';$('#context').placeholder=demo?'Switch to AI to add your situation':chat?'Write your message to Wingman…':'Example: Invite someone I met yesterday for coffee';
+ $('label[for=context]').textContent=chat?'Your message to Wingman':'Your situation (AI mode)';$('#context').placeholder=demo?'Switch to AI to add your situation':chat?'What did they say? What would you like to say back?':'Example: Invite someone I met yesterday for coffee';
  $('#switch-to-ai').hidden=!demo;$('#switch-to-ai').disabled=backend.mode!=='live';
  $('#wingman-signin').hidden=demo||!!getMember();
  $('#adult-label').hidden=demo;
@@ -63,7 +65,7 @@ async function checkService(){
   // Selecting AI does not transmit anything: submit and adult confirmation are still required.
   if(backend.mode!=='live')$('#use-demo').checked=true;else if(!modeChosen)$('#use-demo').checked=false;
 
-  $('.wingman-card strong').textContent=backend.mode==='live'?'Chat + writing tools.':'Ready-made demo available.';
+  $('.wingman-card strong').textContent=backend.mode==='live'?'Your situation. Your voice. A little help.':'Ready-made demo available.';
   $('.benefits>div:last-child b').textContent=backend.mode==='live'?'AI Wingman':'Wingman Demo';
   $('.benefits>div:last-child small').textContent=backend.mode==='live'?'Chat or get help drafting a text.':'Ready-made messages to adapt.';
  }catch{backend={...backend,mode:'offline'};$('#use-demo').checked=true}
@@ -73,6 +75,22 @@ $('#use-demo').addEventListener('change',()=>{modeChosen=true;modeUI()});
 $('#switch-to-ai').addEventListener('click',()=>{modeChosen=true;$('#use-demo').checked=false;modeUI();(getMember()?$('#context'):$('#wingman-signin')).focus()});
 $('#wingman-signin').addEventListener('click',()=>$('#member-open').click());
 window.addEventListener('wingman-mode-changed',modeUI);
+const coachPrompts={
+reply:'Help me reply to my crush. Their message: [short anonymised message]. My intention: [what I want to say]. Suggest one natural reply and briefly explain it.',
+start:'Help me start a conversation. We know each other from [context]. Our shared interest is [interest]. Suggest one natural, low-pressure opener.',
+date:'Help me ask someone out. We know each other from [context]. I would like to suggest [activity]. Write a clear invitation that makes it easy to decline.',
+practice:'Let me practise asking someone out. Set a simple scenario, then wait for my attempt. After my reply give one useful improvement. This is a simulation, not a prediction of their feelings.',
+shorter:'Make your suggested message shorter, keeping my intention and a natural tone.',
+natural:'Rewrite your suggestion in a natural, everyday voice. Avoid cheesy lines.',
+explain:'Briefly explain why your suggested reply fits my situation and what I should adapt before sending it.'
+};
+document.querySelectorAll('[data-coach]').forEach(button=>button.addEventListener('click',()=>{
+ if(wingmanBusy)return;
+ document.querySelector('[data-mode="chat"]').click();
+ $('#context').value=coachPrompts[button.dataset.coach];
+ $('#coach-help').textContent='Replace any [brackets] with your details, review, then send. Choosing a prompt uses no AI credit.';
+ if(!$('#context').disabled)$('#context').focus();else $('#switch-to-ai').focus();
+}));
 $('#new-conversation').addEventListener('click',()=>{if(wingmanBusy)return;conversation.clear();chatPending=null;$('#context').value='';$('#line-status').textContent='New conversation. What’s on your mind?';$('#wingman-view').hidden=true;if(current?.source.includes('WINGMAN')){$('#result').hidden=true;current=null;lastWingman=null;resultButtons(false)}renderConversation();$('#context').focus()});
 $('#retry-service').addEventListener('click',()=>{void checkService();void refreshQuota()});
 modeUI();checkService();

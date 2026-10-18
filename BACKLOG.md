@@ -212,3 +212,16 @@ Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15
 - Draft a message, Date Ideas et Follow Up séparés du Chat ; démo clairement limitée aux outils de phrases.
 - 46 tests passent. Test Chrome réel de deux tours : prénom Camille et timidité correctement rappelés au deuxième tour ; quota 5 → 3 et une seule attribution de points. Passage rédaction puis retour au Chat conserve les quatre bulles. Capture outputs/qa/wingman-conversation.png.
 - Déploiement EECyq5f97xC2rGPeURKMGjPvSw9D réussi. QA en production avec un compte neuf : deux appels réels, rappel Camille/timidité, historique system refusé sans coût de quota, quota 5 → 3, points +10 puis +0. Comptes et quotas de test supprimés. Serveur local actualisé maintenu sur 4180.
+
+### US-COACH-01 — Parcours crush guidé — Implémenté localement
+- Promesse accueil centrée sur quoi répondre ; CTA vers Wingman. Design et assets conservés.
+- Quatre intentions : répondre, briser la glace, inviter, pratiquer. Préremplissage révisable, aucun envoi automatique ni crédit consommé au clic.
+- Après réponse : raccourcir, rendre naturel, expliquer. Conversation et limites existantes conservées.
+- À valider commercialement : entretiens adultes et volonté de payer ; aucun abonnement activé.
+- Vérification : syntaxe JavaScript valide, 46 tests existants réussis. Vérification visuelle du nouveau parcours et test utilisateur restent à faire ; pas de publication production dans cette étape.
+
+### QA lancement gratuit — 2026-10-18
+- Parcours API réel localhost:4180 validé avec compte temporaire supprimé : inscription, connexion, récupération/changement mot de passe, défi concurrent idempotent, points, récompense, partage et suppression, quotas Free et refus 429, isolation admin, suppression compte.
+- Un appel OpenRouter réel réussi avec attribution serveur des points.
+- Test coaching-flow ajouté et réussi : sept intentions préremplissent sans requête, garde pendant envoi et orientation vers AI en mode démo.
+- Vérification visuelle et mobile du parcours guidé encore à effectuer avant publication.

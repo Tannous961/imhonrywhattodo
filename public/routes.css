@@ -30,3 +30,5 @@
 .chat-turn strong{font-size:11px;color:#ffb58c}.chat-turn.user strong{color:#fff}
 .chat-turn p{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}
 @media(max-width:600px){.wingman-conversation{max-height:48vh}.chat-turn{max-width:100%;padding:12px}}
+
+.coach-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.coach-actions[hidden]{display:none}.wingman-guide{margin:16px 0}.coach-actions .back{border:1px solid #ffffff35;border-radius:16px;padding:10px 14px}.coach-actions .back:hover{border-color:#FF347F}
