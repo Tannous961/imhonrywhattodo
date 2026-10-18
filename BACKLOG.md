@@ -170,9 +170,11 @@ Validation : scripts/firebase-qa.mjs (Firebase réel), QA_LIVE=true (un appel IA
 - Distinction entre quota personnel épuisé et budget IA global épuisé. Aucun paiement ajouté.
 
 Validation : 37 tests unitaires/HTTP réussis ; parcours Firebase réel local et préproduction réussi, incluant double validation concurrente, accès privés et quota. Déblocage de récompense/rejeu également testé localement. Compilation Vercel réussie ; compilation locale refusée par Windows (EPERM sur anciens dossiers .next).
-Vérification visuelle en attente de l’autorisation du clic sur la déclaration 18+ locale (règle computer-use) ; aucun résultat visuel revendiqué.
+Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15, bouton désactivé après validation, progression 40/50, démo +10 sans consommation du quota live, déblocage de Lemon Pop à 50 points et prochaine récompense, quota 5/5 puis 0/5 avec démo disponible et paiements désactivés. Limite : l’outil Chrome ignore le réglage de largeur ; vue téléphone non validée.
 
 État exploitation corrigé : GitHub main vérifié au commit daa5be2 avant ce lot. Les anciennes clés restent actives à la demande explicite de l’utilisateur ; les nouvelles sont celles utilisées par le site.
 - Déploiement production 9e3cgC5HX7WoeoNfHt5AzpYqwWfF réussi sur https://imhonrywhattodo-zeta.vercel.app ; parcours Firebase réel en production réussi (défi concurrent sans double crédit, progression et déblocage/rejeu des récompenses, quota Free et accès privés). Comptes de test supprimés.
 
 - Vérification visuelle : clic 18+ autorisé par l’utilisateur. Chrome refuse les commandes de navigation et de lecture (délais dépassés), y compris sur un nouvel onglet. Test visuel desktop/mobile non exécuté ; compte temporaire nettoyé. Les tests API et le déploiement précédents restent validés.
+
+- Blocage local résolu en créant les dossiers de cache Next.js nécessaires. Chrome rétabli après rechargement. Compte et quota de test supprimés. Correction d’un texte technique visible dans les badges, sans refonte visuelle. Captures dans outputs/qa.
