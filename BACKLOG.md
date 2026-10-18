@@ -202,3 +202,4 @@ Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15
 - Interface : contrôle explicite de compatibilité avant changement de session ; erreurs réseau limitées au fetch et erreurs de rendu distinguées.
 - 42 tests passent. Parcours Firebase complet contre localhost:4180 réussi ; connexion par clic dans Chrome réussie, formulaire fermé, compte et points affichés. Compte de test supprimé après capture outputs/qa/account-local-fixed.png.
 - Guide DEMARRAGE-LOCAL.md mis à jour : Firebase, email, plafond 55 points et redémarrage requis pour les modules serveur.
+- Amélioration des erreurs publiée sur Vercel : FJM9kMc4kwPKSMj9SugxAS1Jr1sr. Serveur local actuel conservé sur 4180 pour le test utilisateur.
