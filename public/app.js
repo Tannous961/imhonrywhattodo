@@ -8,6 +8,7 @@ const pick=createPicker();
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 let current=null,savedShare=null,lastWingman=null,rotation=0,spinning=false,wingmanBusy=false,activeRequest=null;
 let quota=null,quotaOwner=null,quotaSequence=0;
+let modeChosen=false;
 let backend={mode:'offline',shareDays:30,localOnly:isLocalOrigin(location.origin)};
 const networkError='Cannot reach the service. Check your connection and try again.';
 async function requestJSON(url,options={}){
@@ -45,8 +46,8 @@ async function checkService(){
  $('#retry-service').disabled=true;
  try{
   backend={...backend,...await requestJSON('/api/status')};
-  // Stay in local demo until the visitor explicitly selects live AI.
-  if(backend.mode!=='live')$('#use-demo').checked=true;
+  // Selecting AI does not transmit anything: submit and adult confirmation are still required.
+  if(backend.mode!=='live')$('#use-demo').checked=true;else if(!modeChosen)$('#use-demo').checked=false;
 
   $('.wingman-card strong').textContent=backend.mode==='live'?'Demo or personal AI reply.':'Ready-made demo available.';
   $('.benefits>div:last-child b').textContent=backend.mode==='live'?'AI Wingman':'Wingman Demo';
@@ -54,8 +55,8 @@ async function checkService(){
  }catch{backend={...backend,mode:'offline'};$('#use-demo').checked=true}
  finally{$('#retry-service').disabled=false;modeUI();shareNote()}
 }
-$('#use-demo').addEventListener('change',modeUI);
-$('#switch-to-ai').addEventListener('click',()=>{$('#use-demo').checked=false;modeUI();(getMember()?$('#context'):$('#wingman-signin')).focus()});
+$('#use-demo').addEventListener('change',()=>{modeChosen=true;modeUI()});
+$('#switch-to-ai').addEventListener('click',()=>{modeChosen=true;$('#use-demo').checked=false;modeUI();(getMember()?$('#context'):$('#wingman-signin')).focus()});
 $('#wingman-signin').addEventListener('click',()=>$('#member-open').click());
 $('#retry-service').addEventListener('click',()=>{void checkService();void refreshQuota()});
 modeUI();checkService();
@@ -109,6 +110,13 @@ $('#spin').addEventListener('click',()=>{
  },reduced()?30:4100);
 });
 
+function renderWingmanReply(result){
+ $('.message-options').classList.add('has-generated');
+ $('.message-options p').textContent=result.body;
+ $('.message-options .reply-origin').textContent=result.source.includes('LIVE AI')?'Your AI reply':'Your demo phrase';
+ $('.assistant-intro p').textContent='Your suggestion is ready. Review it, adapt it, then copy it.';
+ $('#wingman-view').hidden=false;
+}
 const demoTitles=['A little charm, on the house.','Consider the ice gently broken.','Your opening act is ready.'];
 $('#wingman-form').addEventListener('submit',async event=>{
  event.preventDefault();if(wingmanBusy)return;
@@ -116,21 +124,21 @@ $('#wingman-form').addEventListener('submit',async event=>{
  const button=event.target.querySelector('[type=submit]');
  if($('#use-demo').checked){
   const body=pick(lines[situation][tone]);const result={source:'AI WINGMAN · TEMPLATE DEMO',title:pick(demoTitles),body,context:context?`Your topic: “${context}”. This local template does not interpret the context. Make the wording your own.`:''};
-  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;show(result);$('.message-options p').textContent=body;$('.message-options .reply-origin').textContent='Template demo reply';$('#wingman-view').hidden=false;
+  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;show(result);renderWingmanReply(result);
   $('#line-status').textContent='Template ready. Your context was not sent to an AI service.';return;
  }
  if(backend.mode!=='live'){$('#line-status').textContent='Live AI is unavailable. Choose the local demo or retry the service.';return}
  if(!getMember()){$('#line-status').textContent='Create a free account or sign in, then generate your AI suggestion.';$('#member-open').click();return}
  if(!$('#adult-confirm').checked){$('#line-status').textContent='Please confirm you are 18+ before using live AI.';$('#adult-confirm').focus();return}
- wingmanBusy=true;button.disabled=true;$('#cancel-ai').hidden=false;activeRequest=new AbortController();modeUI();
- $('#line-status').textContent='Your Wingman is thinking…';
+ wingmanBusy=true;button.disabled=true;button.textContent='…';$('#wingman-form').setAttribute('aria-busy','true');$('#cancel-ai').hidden=false;activeRequest=new AbortController();modeUI();
+ $('#line-status').textContent='Your Wingman is thinking…';$('#user-chat').textContent=context||'Help me with '+situation+'.';
  document.querySelectorAll('[data-mode]').forEach(el=>el.disabled=true);
  try{
   const result=await requestJSON('/api/wingman',{method:'POST',headers:{'Content-Type':'application/json',...memberHeaders()},body:JSON.stringify({situation,tone,context,adult:true}),signal:AbortSignal.any([activeRequest.signal,AbortSignal.timeout(30000)])});
-  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;show(result);$('.message-options p').textContent=result.body;$('.message-options .reply-origin').textContent='Live AI reply';$('#wingman-view').hidden=false;
+  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;show(result);renderWingmanReply(result);
   $('#line-status').textContent='Reply generated by AI. Review it before sending.';
  }catch(error){$('#line-status').textContent=error.name==='AbortError'?'Request cancelled.':error.name==='TimeoutError'?'The request timed out. Try again or choose the local demo.':error.message}
- finally{wingmanBusy=false;button.disabled=false;activeRequest=null;$('#cancel-ai').hidden=true;document.querySelectorAll('[data-mode]').forEach(el=>el.disabled=false);modeUI();void refreshQuota()}
+ finally{wingmanBusy=false;button.disabled=false;button.textContent='➤';$('#wingman-form').setAttribute('aria-busy','false');activeRequest=null;$('#cancel-ai').hidden=true;document.querySelectorAll('[data-mode]').forEach(el=>el.disabled=false);modeUI();void refreshQuota()}
 });
 $('#cancel-ai').addEventListener('click',()=>activeRequest?.abort());
 $('#wingman-view').addEventListener('click',()=>{if(lastWingman){show(lastWingman,{remember:false});viewResult()}});

@@ -18,3 +18,8 @@
 .route-account #club .daily-challenge,.route-account #club .reward-progress{display:block!important}
 #club-reward-progress{width:100%;accent-color:#c6ff48}
 #wingman-upgrade a{text-decoration:underline;color:#ffb58c}
+
+/* Generated reply occupies the existing message card, separate from examples. */
+.message-options.has-generated>div:first-child{grid-column:1/-1}
+.message-options.has-generated>div:not(:first-child){display:none}
+.message-options.has-generated p{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}

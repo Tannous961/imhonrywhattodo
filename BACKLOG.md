@@ -187,3 +187,11 @@ Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15
 - Mention LOCAL PLAYGROUND retirée du site public ; onglet de navigation actif conforme à la page.
 - Design, images, palette et slogan conservés. 38 tests réussis, dont états démo/IA/invité/connecté/hors ligne. Parcours invité et accueil vérifiés dans Chrome local, captures outputs/qa/home-clarified.png et wingman-clarified.png.
 - Publiée et vérifiée en production : déploiement BZSooTVvG3FzESy8hKxrRaCgdYEx, https://imhonrywhattodo-zeta.vercel.app. Promesse, guide Wingman, retrait du libellé local et navigation active confirmés sur le HTML servi.
+
+### US-FIX-WINGMAN-01 — Clic sans réponse perceptible — Corrigée localement
+- Service IA en production validé par un appel OpenRouter réel, puis envoi testé par clic dans Chrome local avec compte temporaire : réponse personnalisée, 10 points, quota 5 → 4.
+- IA sélectionnée dès que le service est disponible ; aucune transmission avant soumission et confirmation 18+. Choix explicite de la démo conservé lors des nouvelles vérifications du service.
+- Un clic invité ouvre le compte ; la demande saisie reste présente après connexion. Indicateur sur le bouton et aria-busy pendant l’envoi.
+- Réponse générée dans une carte pleine largeur distincte des exemples ; texte saisi rappelé dans la bulle. Changer de catégorie rétablit les exemples.
+- Version des scripts/styles incrémentée pour éviter les anciennes ressources. 40 tests passent, dont choix initial IA, maintien du choix démo et rendu textuel de la réponse. Compte et quota de test supprimés. Capture outputs/qa/wingman-live-click.png.
+- Publiée : G3GWPwKiWkuzLcrn6zNBa4dNGoEX. Après rechargement en production, mode LIVE AI et champ actif confirmés ; accès au compte demandé aux invités.

@@ -23,6 +23,8 @@ import {historyEntry} from './core.mjs';
  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
    document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('selected',b===button);b.setAttribute('aria-pressed',String(b===button))});
    $('#situation').value=button.dataset.mode;
+   $('.message-options').classList.remove('has-generated');
+   $('.assistant-intro p').textContent='Examples to copy. Generate your own suggestion below:';
    $('#wingman-view').hidden=true;
    document.querySelectorAll('.reply-origin').forEach(el=>el.textContent='Template example');
    $('#user-chat').textContent={opener:'I want to text my crush but I’m nervous…',date:'Help me ask them out. With a little charm.',followup:'A second date? I’d like a sequel.'}[button.dataset.mode];
