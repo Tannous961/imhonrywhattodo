@@ -109,3 +109,6 @@ Le lot est validé lorsque :
 - scripts/firebase-qa.mjs vérifie deux validations simultanées du défi (15 points au total), le déblocage/rejeu de récompense, le quota réel Free et les refus après déconnexion.
 - Quota affiché par GET /api/wingman/usage ; aucune clé fournisseur exposée au navigateur.
 - La réalisation des défis est auto-déclarée. Aucun paiement ajouté.
+
+## Conversation Wingman
+46 tests unitaires/HTTP couvrent aussi les rôles d’historique autorisés, les bornes Unicode, l’ordre des messages fournisseur et l’effacement de mémoire au changement de compte. Test visuel réel : deux échanges en français avec rappel du prénom, quota décrémenté à chaque réponse, points attribués une seule fois. Historique de conversation limité à l’onglet, non archivé automatiquement.

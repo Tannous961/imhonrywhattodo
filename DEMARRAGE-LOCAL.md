@@ -25,7 +25,7 @@ Les modules serveur Firebase ne sont pas rechargés automatiquement par Next.js.
 
 - Decision Machine : trois choix et récapitulatif, puis idée issue du catalogue.
 - Roulette : activité aléatoire et défi facultatif.
-- Wingman : IA sélectionnée si configurée, connexion et confirmation 18+ requises avant un appel. Cinq tentatives Free par jour UTC. Démo de phrases disponible sans appel IA.
+- Wingman : onglet Chat par défaut, réponses directes et mémoire des quatre derniers échanges dans l’onglet. Aucun archivage automatique de la conversation ; rechargement, déconnexion/changement de compte ou New conversation efface cette mémoire. Draft a message, Date Ideas et Follow Up restent des outils séparés. Connexion et confirmation 18+ requises avant un appel IA ; cinq tentatives Free par jour UTC, partagées entre Chat et outils. Démo de phrases disponible dans les outils sans appel IA.
 - Compte Firebase : email et mot de passe ; récupération par email. Aucun code local de récupération à conserver.
 - Fidélité : 20 points de bienvenue, puis jusqu’à 55 points par jour UTC. Défi quotidien et défi Roulette partagent la récompense de défi. Points cosmétiques, sans valeur monétaire et sans conversion en requêtes IA.
 - Favoris privés et historique du compte facultatif. Historique de l’appareil distinct, également facultatif.

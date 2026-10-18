@@ -23,6 +23,7 @@ import {historyEntry} from './core.mjs';
  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
    document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('selected',b===button);b.setAttribute('aria-pressed',String(b===button))});
    $('#situation').value=button.dataset.mode;
+   if(button.dataset.mode==='chat'){window.dispatchEvent(new Event('wingman-mode-changed'));return}
    $('.message-options').classList.remove('has-generated');
    $('.assistant-intro p').textContent='Examples to copy. Generate your own suggestion below:';
    $('#wingman-view').hidden=true;
@@ -30,6 +31,7 @@ import {historyEntry} from './core.mjs';
    $('#user-chat').textContent={opener:'I want to text my crush but I’m nervous…',date:'Help me ask them out. With a little charm.',followup:'A second date? I’d like a sequel.'}[button.dataset.mode];
    const examples={opener:['Important research: what’s your most defensible terrible movie opinion?','What’s one small thing that made your day better?','I was going to play it cool, but curiosity won. Want to chat?'],date:['Want to grab coffee and judge the pastries like we’re qualified?','I’ve enjoyed talking with you. Would you like to go for coffee?','I like our vibe. Want to go on a date this weekend?'],followup:['I had a lovely time. Fancy a sequel?','I enjoyed seeing you. I’d be happy to do it again if you feel the same.','I’d like to see you again. Want to make a plan?']};
    document.querySelectorAll('.message-options p').forEach((p,i)=>p.textContent=examples[button.dataset.mode][i]);
+   window.dispatchEvent(new Event('wingman-mode-changed'));
  }));
  document.querySelectorAll('.copy-line').forEach(button=>button.addEventListener('click',async()=>{
    const text=button.previousElementSibling.textContent;

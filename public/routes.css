@@ -23,3 +23,10 @@
 .message-options.has-generated>div:first-child{grid-column:1/-1}
 .message-options.has-generated>div:not(:first-child){display:none}
 .message-options.has-generated p{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+
+.wingman-conversation{max-height:380px;overflow-y:auto;overscroll-behavior:contain;padding:8px 4px;margin:14px 0}
+.chat-turn{max-width:94%;padding:14px 16px;margin:12px 0;border:1px solid #ffffff35;border-radius:16px;background:#2b293f}
+.chat-turn.user{margin-left:auto;background:linear-gradient(115deg,#8f3ce7,#aa7eef)}
+.chat-turn strong{font-size:11px;color:#ffb58c}.chat-turn.user strong{color:#fff}
+.chat-turn p{font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}
+@media(max-width:600px){.wingman-conversation{max-height:48vh}.chat-turn{max-width:100%;padding:12px}}

@@ -1,3 +1,4 @@
+import {createConversation} from './wingman-chat.mjs';
 import './hero-scroll.mjs';
 import {memberHeaders,getCardStyle,acceptMemberAward,getMember} from './member.mjs';
 import {lines} from './content.mjs';
@@ -5,6 +6,7 @@ import {createPicker,decide,rouletteChoices,rouletteResult,nextRotation,normaliz
 
 const $=selector=>document.querySelector(selector);
 const pick=createPicker();
+const conversation=createConversation();let chatPending=null;
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 let current=null,savedShare=null,lastWingman=null,rotation=0,spinning=false,wingmanBusy=false,activeRequest=null;
 let quota=null,quotaOwner=null,quotaSequence=0;
@@ -26,16 +28,28 @@ function renderQuota(){
  $('#wingman-upgrade').hidden=!q||!!q.error||q.remaining!==0;
 }
 async function refreshQuota(){const sequence=++quotaSequence,owner=getMember()?.id;quotaOwner=owner;quota=null;renderQuota();if(!owner)return;try{const result=await requestJSON('/api/wingman/usage');if(sequence===quotaSequence&&getMember()?.id===owner)quota=result.usage}catch{if(sequence===quotaSequence&&getMember()?.id===owner)quota={error:true}}if(sequence===quotaSequence)renderQuota()}
-window.addEventListener('member-changed',()=>{void refreshQuota();modeUI()});
+window.addEventListener('member-changed',()=>{if(conversation.setOwner(getMember()?.id||null)){chatPending=null;activeRequest?.abort();renderConversation()}void refreshQuota();modeUI()});
 window.addEventListener('focus',()=>void refreshQuota());
 void refreshQuota();
+function renderConversation(){
+ const log=$('#wingman-conversation');log.replaceChildren();
+ const turns=[...conversation.messages(),...(chatPending?[{role:'user',content:chatPending}]:[])];
+ if(!turns.length){const hint=document.createElement('p');hint.className='micro';hint.textContent='Say hello or tell me what’s on your mind. Your chat stays in this tab until you reload or start again.';log.append(hint)}
+ for(const turn of turns){const card=document.createElement('article');card.className='chat-turn '+turn.role;const label=document.createElement('strong');label.textContent=turn.role==='user'?'You':'Wingman';const body=document.createElement('p');body.textContent=turn.content;card.append(label,body);if(turn.role==='assistant'){const copy=document.createElement('button');copy.type='button';copy.className='back';copy.textContent='Copy reply';copy.addEventListener('click',()=>void copyText(turn.content,message=>$('#line-status').textContent=message));card.append(copy)}log.append(card)}
+ log.scrollTop=log.scrollHeight;
+}
 function modeUI(){
- const demo=$('#use-demo').checked;
- $('#wingman-form [type=submit]').setAttribute('aria-label',demo?'Generate a demo reply':'Generate an AI reply');
- $('.wingman-settings>span').textContent=demo?'Ready-made phrases · not personalised':'AI uses your situation · review before sending';
+ const demo=$('#use-demo').checked,chat=$('#situation').value==='chat';
+ $('#wingman-conversation').hidden=!chat;$('#new-conversation').hidden=!chat;$('#new-conversation').disabled=wingmanBusy;
+ $('#user-chat').hidden=chat;$('.assistant-intro').hidden=chat;$('.message-options').hidden=chat;
+ if(chat)renderConversation();
+ $('#wingman-form [type=submit]').setAttribute('aria-label',demo?'Generate a demo reply':chat?'Send message to Wingman':'Generate an AI reply');
+ $('.wingman-settings>span').textContent=demo?'Ready-made phrases · not personalised':chat?'Direct replies · remembers this conversation':'AI uses your situation · review before sending';
  $('.demo-tag').textContent=demo?'TEMPLATE DEMO':'LIVE AI';
  $('#wingman-mode-help').textContent=demo?'Demo picks a ready-made phrase. It does not read your situation. Switch to AI for a personalised suggestion.':'Describe your situation below. AI will generate one suggestion; it does not send messages to anyone.';
- $('#context').disabled=demo;$('#context').placeholder=demo?'Switch to AI to add your situation':'Example: Invite someone I met yesterday for coffee';
+ if(chat){$('#wingman-mode-help').textContent=demo?'Live conversation requires AI mode. For ready-made demo phrases, choose Draft a message.':'Talk naturally. Wingman remembers the last four exchanges in this tab. Each reply uses one AI request.';$('#wingman-form [type=submit]').disabled=wingmanBusy||demo;}
+ $('#context').disabled=demo||wingmanBusy;
+ $('label[for=context]').textContent=chat?'Your message to Wingman':'Your situation (AI mode)';$('#context').placeholder=demo?'Switch to AI to add your situation':chat?'Write your message to Wingman…':'Example: Invite someone I met yesterday for coffee';
  $('#switch-to-ai').hidden=!demo;$('#switch-to-ai').disabled=backend.mode!=='live';
  $('#wingman-signin').hidden=demo||!!getMember();
  $('#adult-label').hidden=demo;
@@ -49,15 +63,17 @@ async function checkService(){
   // Selecting AI does not transmit anything: submit and adult confirmation are still required.
   if(backend.mode!=='live')$('#use-demo').checked=true;else if(!modeChosen)$('#use-demo').checked=false;
 
-  $('.wingman-card strong').textContent=backend.mode==='live'?'Demo or personal AI reply.':'Ready-made demo available.';
+  $('.wingman-card strong').textContent=backend.mode==='live'?'Chat + writing tools.':'Ready-made demo available.';
   $('.benefits>div:last-child b').textContent=backend.mode==='live'?'AI Wingman':'Wingman Demo';
-  $('.benefits>div:last-child small').textContent=backend.mode==='live'?'Messages to adapt and send yourself.':'Ready-made messages to adapt.';
+  $('.benefits>div:last-child small').textContent=backend.mode==='live'?'Chat or get help drafting a text.':'Ready-made messages to adapt.';
  }catch{backend={...backend,mode:'offline'};$('#use-demo').checked=true}
  finally{$('#retry-service').disabled=false;modeUI();shareNote()}
 }
 $('#use-demo').addEventListener('change',()=>{modeChosen=true;modeUI()});
 $('#switch-to-ai').addEventListener('click',()=>{modeChosen=true;$('#use-demo').checked=false;modeUI();(getMember()?$('#context'):$('#wingman-signin')).focus()});
 $('#wingman-signin').addEventListener('click',()=>$('#member-open').click());
+window.addEventListener('wingman-mode-changed',modeUI);
+$('#new-conversation').addEventListener('click',()=>{if(wingmanBusy)return;conversation.clear();chatPending=null;$('#context').value='';$('#line-status').textContent='New conversation. What’s on your mind?';$('#wingman-view').hidden=true;if(current?.source.includes('WINGMAN')){$('#result').hidden=true;current=null;lastWingman=null;resultButtons(false)}renderConversation();$('#context').focus()});
 $('#retry-service').addEventListener('click',()=>{void checkService();void refreshQuota()});
 modeUI();checkService();
 function shareNote(){
@@ -121,24 +137,29 @@ const demoTitles=['A little charm, on the house.','Consider the ice gently broke
 $('#wingman-form').addEventListener('submit',async event=>{
  event.preventDefault();if(wingmanBusy)return;
  const context=$('#context').value.trim(),situation=$('#situation').value,tone=$('#tone').value;
- const button=event.target.querySelector('[type=submit]');
+ const button=event.target.querySelector('[type=submit]'),chat=situation==='chat',owner=getMember()?.id;
+ if(chat&&!context){$('#line-status').textContent='Write a message first.';$('#context').focus();return}
  if($('#use-demo').checked){
-  const body=pick(lines[situation][tone]);const result={source:'AI WINGMAN · TEMPLATE DEMO',title:pick(demoTitles),body,context:context?`Your topic: “${context}”. This local template does not interpret the context. Make the wording your own.`:''};
-  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;show(result);renderWingmanReply(result);
-  $('#line-status').textContent='Template ready. Your context was not sent to an AI service.';return;
+  if(chat){$('#line-status').textContent='Choose AI for a real conversation, or Draft a message for the ready-made demo.';return}
+  const body=pick(lines[situation][tone]);const result={source:'AI WINGMAN · TEMPLATE DEMO',title:pick(demoTitles),body};
+  lastWingman=result;show(result);renderWingmanReply(result);
+  $('#line-status').textContent='Template ready. No AI request was used.';return;
  }
  if(backend.mode!=='live'){$('#line-status').textContent='Live AI is unavailable. Choose the local demo or retry the service.';return}
  if(!getMember()){$('#line-status').textContent='Create a free account or sign in, then generate your AI suggestion.';$('#member-open').click();return}
  if(!$('#adult-confirm').checked){$('#line-status').textContent='Please confirm you are 18+ before using live AI.';$('#adult-confirm').focus();return}
  wingmanBusy=true;button.disabled=true;button.textContent='…';$('#wingman-form').setAttribute('aria-busy','true');$('#cancel-ai').hidden=false;activeRequest=new AbortController();modeUI();
+ if(chat){chatPending=context;renderConversation()}
  $('#line-status').textContent='Your Wingman is thinking…';$('#user-chat').textContent=context||'Help me with '+situation+'.';
  document.querySelectorAll('[data-mode]').forEach(el=>el.disabled=true);
  try{
-  const result=await requestJSON('/api/wingman',{method:'POST',headers:{'Content-Type':'application/json',...memberHeaders()},body:JSON.stringify({situation,tone,context,adult:true}),signal:AbortSignal.any([activeRequest.signal,AbortSignal.timeout(30000)])});
-  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;show(result);renderWingmanReply(result);
-  $('#line-status').textContent='Reply generated by AI. Review it before sending.';
+  const result=await requestJSON('/api/wingman',{method:'POST',headers:{'Content-Type':'application/json',...memberHeaders()},body:JSON.stringify({situation,tone,context,adult:true,...(chat?{history:conversation.history()}:{})}),signal:AbortSignal.any([activeRequest.signal,AbortSignal.timeout(30000)])});
+  if(owner!==getMember()?.id)throw Error('Your account changed. This reply was discarded.');
+  if(result.memberAward)acceptMemberAward(result.memberAward);lastWingman=result;
+  if(chat){conversation.append(context,result.body);chatPending=null;renderConversation();$('#context').value='';$('#wingman-view').hidden=false}else{show(result);renderWingmanReply(result)}
+  $('#line-status').textContent=chat?'Wingman replied. Keep the conversation going.':'Reply generated by AI. Review it before sending.';
  }catch(error){$('#line-status').textContent=error.name==='AbortError'?'Request cancelled.':error.name==='TimeoutError'?'The request timed out. Try again or choose the local demo.':error.message}
- finally{wingmanBusy=false;button.disabled=false;button.textContent='➤';$('#wingman-form').setAttribute('aria-busy','false');activeRequest=null;$('#cancel-ai').hidden=true;document.querySelectorAll('[data-mode]').forEach(el=>el.disabled=false);modeUI();void refreshQuota()}
+ finally{chatPending=null;if(chat)renderConversation();wingmanBusy=false;button.disabled=false;button.textContent='➤';$('#wingman-form').setAttribute('aria-busy','false');activeRequest=null;$('#cancel-ai').hidden=true;document.querySelectorAll('[data-mode]').forEach(el=>el.disabled=false);modeUI();void refreshQuota()}
 });
 $('#cancel-ai').addEventListener('click',()=>activeRequest?.abort());
 $('#wingman-view').addEventListener('click',()=>{if(lastWingman){show(lastWingman,{remember:false});viewResult()}});

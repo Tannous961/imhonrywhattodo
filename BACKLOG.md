@@ -203,3 +203,12 @@ Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15
 - 42 tests passent. Parcours Firebase complet contre localhost:4180 réussi ; connexion par clic dans Chrome réussie, formulaire fermé, compte et points affichés. Compte de test supprimé après capture outputs/qa/account-local-fixed.png.
 - Guide DEMARRAGE-LOCAL.md mis à jour : Firebase, email, plafond 55 points et redémarrage requis pour les modules serveur.
 - Amélioration des erreurs publiée sur Vercel : FJM9kMc4kwPKSMj9SugxAS1Jr1sr. Serveur local actuel conservé sur 4180 pour le test utilisateur.
+
+### US-CHAT-01 — Conversation Wingman — Implémentée et validée localement
+- Chat sélectionné par défaut : réponse directe dans la langue de l’utilisateur, messages en bulles, saisie vidée après succès, texte conservé en cas d’erreur.
+- Quatre derniers échanges conservés uniquement en mémoire dans l’onglet ; aucune sauvegarde automatique du transcript. Réinitialisation manuelle, au rechargement et lors d’un changement de compte. Réponse tardive d’une autre session rejetée.
+- Historique envoyé à OpenRouter limité à huit messages alternés user/assistant, 1 000 caractères par message ; aucun rôle system fourni par le client accepté. Budget JSON spécifique au chat, autres endpoints inchangés.
+- Quota Free de cinq tentatives/jour partagé avec les outils, plafond global et points une fois par jour conservés.
+- Draft a message, Date Ideas et Follow Up séparés du Chat ; démo clairement limitée aux outils de phrases.
+- 46 tests passent. Test Chrome réel de deux tours : prénom Camille et timidité correctement rappelés au deuxième tour ; quota 5 → 3 et une seule attribution de points. Passage rédaction puis retour au Chat conserve les quatre bulles. Capture outputs/qa/wingman-conversation.png.
+- Déploiement EECyq5f97xC2rGPeURKMGjPvSw9D réussi. QA en production avec un compte neuf : deux appels réels, rappel Camille/timidité, historique system refusé sans coût de quota, quota 5 → 3, points +10 puis +0. Comptes et quotas de test supprimés. Serveur local actualisé maintenu sur 4180.
