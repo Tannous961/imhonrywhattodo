@@ -195,3 +195,10 @@ Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15
 - Réponse générée dans une carte pleine largeur distincte des exemples ; texte saisi rappelé dans la bulle. Changer de catégorie rétablit les exemples.
 - Version des scripts/styles incrémentée pour éviter les anciennes ressources. 40 tests passent, dont choix initial IA, maintien du choix démo et rendu textuel de la réponse. Compte et quota de test supprimés. Capture outputs/qa/wingman-live-click.png.
 - Publiée : G3GWPwKiWkuzLcrn6zNBa4dNGoEX. Après rechargement en production, mode LIVE AI et champ actif confirmés ; accès au compte demandé aux invités.
+
+### US-FIX-ACCOUNT-01 — Ancienne API locale et faux message réseau — Corrigée
+- Reproduction sur localhost:4180 : inscription API réussie mais réponse sans dailyChallenge ; le serveur ancien restait actif pendant la mise à jour des pages. accept() levait un TypeError présenté à tort comme une panne réseau.
+- Ancienne session 65413 arrêtée ; nouveau serveur démarré sur le même port 4180. Ne pas arrêter la nouvelle session après QA : l’utilisateur teste ce serveur.
+- Interface : contrôle explicite de compatibilité avant changement de session ; erreurs réseau limitées au fetch et erreurs de rendu distinguées.
+- 42 tests passent. Parcours Firebase complet contre localhost:4180 réussi ; connexion par clic dans Chrome réussie, formulaire fermé, compte et points affichés. Compte de test supprimé après capture outputs/qa/account-local-fixed.png.
+- Guide DEMARRAGE-LOCAL.md mis à jour : Firebase, email, plafond 55 points et redémarrage requis pour les modules serveur.
