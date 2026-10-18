@@ -178,3 +178,12 @@ Vérification visuelle effectuée après autorisation 18+ : connexion, défi +15
 - Vérification visuelle : clic 18+ autorisé par l’utilisateur. Chrome refuse les commandes de navigation et de lecture (délais dépassés), y compris sur un nouvel onglet. Test visuel desktop/mobile non exécuté ; compte temporaire nettoyé. Les tests API et le déploiement précédents restent validés.
 
 - Blocage local résolu en créant les dossiers de cache Next.js nécessaires. Chrome rétabli après rechargement. Compte et quota de test supprimés. Correction d’un texte technique visible dans les badges, sans refonte visuelle. Captures dans outputs/qa.
+
+### US-UX-01 — Comprendre le produit dès la première visite — Terminée localement
+- Promesse explicite : trouver une idée, préparer un message ou essayer un défi. Bouton d’accueil vers Decision Machine.
+- Chaque expérience explique son entrée, son résultat et l’action suivante ; catalogue et hasard distingués de l’IA.
+- Wingman présenté comme générateur de suggestions. Badge du mode réellement choisi, bouton explicite vers l’IA, champ de situation désactivé en démo, accès au compte proposé avant tout appel IA invité.
+- Compte identifiable après connexion ; points décrits comme cosmétiques, sans argent ni messages IA supplémentaires. Quota IA gratuit présent sur la page Free ; Premium indisponible clairement indiqué.
+- Mention LOCAL PLAYGROUND retirée du site public ; onglet de navigation actif conforme à la page.
+- Design, images, palette et slogan conservés. 38 tests réussis, dont états démo/IA/invité/connecté/hors ligne. Parcours invité et accueil vérifiés dans Chrome local, captures outputs/qa/home-clarified.png et wingman-clarified.png.
+- Publiée et vérifiée en production : déploiement BZSooTVvG3FzESy8hKxrRaCgdYEx, https://imhonrywhattodo-zeta.vercel.app. Promesse, guide Wingman, retrait du libellé local et navigation active confirmés sur le HTML servi.

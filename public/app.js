@@ -9,7 +9,7 @@ const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 let current=null,savedShare=null,lastWingman=null,rotation=0,spinning=false,wingmanBusy=false,activeRequest=null;
 let quota=null,quotaOwner=null,quotaSequence=0;
 let backend={mode:'offline',shareDays:30,localOnly:isLocalOrigin(location.origin)};
-const networkError='Cannot reach the local server. Keep start.cmd running, then try again.';
+const networkError='Cannot reach the service. Check your connection and try again.';
 async function requestJSON(url,options={}){
  try{
   const response=await fetch(url,{...options,signal:options.signal||AbortSignal.timeout(30000)});
@@ -25,15 +25,20 @@ function renderQuota(){
  $('#wingman-upgrade').hidden=!q||!!q.error||q.remaining!==0;
 }
 async function refreshQuota(){const sequence=++quotaSequence,owner=getMember()?.id;quotaOwner=owner;quota=null;renderQuota();if(!owner)return;try{const result=await requestJSON('/api/wingman/usage');if(sequence===quotaSequence&&getMember()?.id===owner)quota=result.usage}catch{if(sequence===quotaSequence&&getMember()?.id===owner)quota={error:true}}if(sequence===quotaSequence)renderQuota()}
-window.addEventListener('member-changed',()=>void refreshQuota());
+window.addEventListener('member-changed',()=>{void refreshQuota();modeUI()});
 window.addEventListener('focus',()=>void refreshQuota());
 void refreshQuota();
 function modeUI(){
  const demo=$('#use-demo').checked;
  $('#wingman-form [type=submit]').setAttribute('aria-label',demo?'Generate a demo reply':'Generate an AI reply');
- $('.wingman-settings>span').textContent=demo?'Local templates · no live AI':'Live AI · context sent through OpenRouter';
+ $('.wingman-settings>span').textContent=demo?'Ready-made phrases · not personalised':'AI uses your situation · review before sending';
+ $('.demo-tag').textContent=demo?'TEMPLATE DEMO':'LIVE AI';
+ $('#wingman-mode-help').textContent=demo?'Demo picks a ready-made phrase. It does not read your situation. Switch to AI for a personalised suggestion.':'Describe your situation below. AI will generate one suggestion; it does not send messages to anyone.';
+ $('#context').disabled=demo;$('#context').placeholder=demo?'Switch to AI to add your situation':'Example: Invite someone I met yesterday for coffee';
+ $('#switch-to-ai').hidden=!demo;$('#switch-to-ai').disabled=backend.mode!=='live';
+ $('#wingman-signin').hidden=demo||!!getMember();
  $('#adult-label').hidden=demo;
- $('#wingman-status').textContent=backend.mode==='offline'?'Local server unavailable. The template demo still works.':demo?'Template demo · your context stays in this browser':'Live AI · your allowance is shown below';
+ $('#wingman-status').textContent=backend.mode==='offline'?'AI service unavailable. The ready-made demo still works.':demo?'Demo selected · no AI request is used':getMember()?'AI selected · uses 1 live AI request per attempt':'AI selected · create a free account or sign in to continue';
  $('#use-demo').disabled=wingmanBusy||backend.mode!=='live';
 }
 async function checkService(){
@@ -42,14 +47,16 @@ async function checkService(){
   backend={...backend,...await requestJSON('/api/status')};
   // Stay in local demo until the visitor explicitly selects live AI.
   if(backend.mode!=='live')$('#use-demo').checked=true;
-  $('.demo-tag').textContent=backend.mode==='live'?'LIVE AVAILABLE':'DEMO';
-  $('.wingman-card strong').textContent=backend.mode==='live'?'Live AI available.':'Template demo.';
+
+  $('.wingman-card strong').textContent=backend.mode==='live'?'Demo or personal AI reply.':'Ready-made demo available.';
   $('.benefits>div:last-child b').textContent=backend.mode==='live'?'AI Wingman':'Wingman Demo';
-  $('.benefits>div:last-child small').textContent=backend.mode==='live'?'Choose live AI or local demo.':'Local templates. Real charm.';
+  $('.benefits>div:last-child small').textContent=backend.mode==='live'?'Messages to adapt and send yourself.':'Ready-made messages to adapt.';
  }catch{backend={...backend,mode:'offline'};$('#use-demo').checked=true}
  finally{$('#retry-service').disabled=false;modeUI();shareNote()}
 }
 $('#use-demo').addEventListener('change',modeUI);
+$('#switch-to-ai').addEventListener('click',()=>{$('#use-demo').checked=false;modeUI();(getMember()?$('#context'):$('#wingman-signin')).focus()});
+$('#wingman-signin').addEventListener('click',()=>$('#member-open').click());
 $('#retry-service').addEventListener('click',()=>{void checkService();void refreshQuota()});
 modeUI();checkService();
 function shareNote(){
@@ -113,6 +120,7 @@ $('#wingman-form').addEventListener('submit',async event=>{
   $('#line-status').textContent='Template ready. Your context was not sent to an AI service.';return;
  }
  if(backend.mode!=='live'){$('#line-status').textContent='Live AI is unavailable. Choose the local demo or retry the service.';return}
+ if(!getMember()){$('#line-status').textContent='Create a free account or sign in, then generate your AI suggestion.';$('#member-open').click();return}
  if(!$('#adult-confirm').checked){$('#line-status').textContent='Please confirm you are 18+ before using live AI.';$('#adult-confirm').focus();return}
  wingmanBusy=true;button.disabled=true;$('#cancel-ai').hidden=false;activeRequest=new AbortController();modeUI();
  $('#line-status').textContent='Your Wingman is thinking…';
