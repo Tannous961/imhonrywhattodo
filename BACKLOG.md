@@ -174,3 +174,5 @@ Vérification visuelle en attente de l’autorisation du clic sur la déclaratio
 
 État exploitation corrigé : GitHub main vérifié au commit daa5be2 avant ce lot. Les anciennes clés restent actives à la demande explicite de l’utilisateur ; les nouvelles sont celles utilisées par le site.
 - Déploiement production 9e3cgC5HX7WoeoNfHt5AzpYqwWfF réussi sur https://imhonrywhattodo-zeta.vercel.app ; parcours Firebase réel en production réussi (défi concurrent sans double crédit, progression et déblocage/rejeu des récompenses, quota Free et accès privés). Comptes de test supprimés.
+
+- Vérification visuelle : clic 18+ autorisé par l’utilisateur. Chrome refuse les commandes de navigation et de lecture (délais dépassés), y compris sur un nouvel onglet. Test visuel desktop/mobile non exécuté ; compte temporaire nettoyé. Les tests API et le déploiement précédents restent validés.
