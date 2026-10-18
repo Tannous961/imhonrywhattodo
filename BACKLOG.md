@@ -149,3 +149,28 @@ Validation : scripts/firebase-qa.mjs (Firebase réel), QA_LIVE=true (un appel IA
 - Nouvelles clés Firebase et OpenRouter créées avec autorisation, validées sans affichage et configurées sur Vercel Preview/Production.
 - Déploiement production A74Nj2qivXyvfQnM7FhTVPiX4vfh réussi ; parcours Firebase et appel OpenRouter réel réussis avec les remplaçantes. Clé OpenRouter plafonnée à 10 USD/mois, expiration un an.
 - Anciennes clés : révocation préparée, confirmation finale demandée après QA.
+
+## Fidélité gratuite — lot du 18 octobre 2026
+
+### US-RET-01 — Défi quotidien gratuit — Implémentée et validée côté API
+- Défi choisi côté serveur parmi sept propositions, renouvelé à 00:00 UTC.
+- Validation déclarative, facultative ; transaction Firestore empêchant le double crédit, y compris deux appels simultanés.
+- Jusqu’à 15 points, partagés avec la récompense quotidienne de défi Roulette et soumis au plafond existant de 55 points.
+- Défi visible dans Compte et Défis ; statut conservé après reconnexion. Pas de pénalité de série.
+
+### US-RET-02 — Progression et récompenses — Implémentée et validée côté API
+- Prochaine récompense, points manquants et barre de progression calculés sur le solde disponible.
+- Récompenses déjà possédées exclues de la prochaine cible ; déblocage sans double débit.
+- Niveau fondé sur les points acquis au total, distinct du solde dépensable. Badges de défis applicables aux défis quotidiens et Roulette.
+
+### US-RET-03 — Quota Wingman lisible — Implémentée et validée côté API
+- Endpoint authentifié de quota réel : cinq tentatives Free par compte et par jour UTC.
+- Affichage du restant, du moment de remise à zéro, rafraîchissement après requête et changement de compte.
+- À épuisement : démo gratuite et lien d’information Premium avec paiements explicitement indisponibles.
+- Distinction entre quota personnel épuisé et budget IA global épuisé. Aucun paiement ajouté.
+
+Validation : 37 tests unitaires/HTTP réussis ; parcours Firebase réel local et préproduction réussi, incluant double validation concurrente, accès privés et quota. Déblocage de récompense/rejeu également testé localement. Compilation Vercel réussie ; compilation locale refusée par Windows (EPERM sur anciens dossiers .next).
+Vérification visuelle en attente de l’autorisation du clic sur la déclaration 18+ locale (règle computer-use) ; aucun résultat visuel revendiqué.
+
+État exploitation corrigé : GitHub main vérifié au commit daa5be2 avant ce lot. Les anciennes clés restent actives à la demande explicite de l’utilisateur ; les nouvelles sont celles utilisées par le site.
+- Déploiement production 9e3cgC5HX7WoeoNfHt5AzpYqwWfF réussi sur https://imhonrywhattodo-zeta.vercel.app ; parcours Firebase réel en production réussi (défi concurrent sans double crédit, progression et déblocage/rejeu des récompenses, quota Free et accès privés). Comptes de test supprimés.

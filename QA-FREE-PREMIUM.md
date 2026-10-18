@@ -103,3 +103,9 @@ Le lot est validé lorsque :
 - Verified 75 lifetime points: 20 welcome + 55 daily cap, First Move badge and persistent favourite.
 - Temporary browser test account deleted through the UI.
 - Next production build passed. Live AI and paid subscription excluded (not configured).
+
+## Fidélité gratuite (18 octobre 2026)
+- Tests supplémentaires dans test/retention.test.mjs : défi quotidien, changement UTC, rejeu, plafond partagé et progression des récompenses.
+- scripts/firebase-qa.mjs vérifie deux validations simultanées du défi (15 points au total), le déblocage/rejeu de récompense, le quota réel Free et les refus après déconnexion.
+- Quota affiché par GET /api/wingman/usage ; aucune clé fournisseur exposée au navigateur.
+- La réalisation des défis est auto-déclarée. Aucun paiement ajouté.

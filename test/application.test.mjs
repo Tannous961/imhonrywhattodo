@@ -73,7 +73,7 @@ test('configuration validates origins and budgets; frontend hooks and assets are
   const source=readFileSync(new URL(name,root),'utf8');for(const match of source.matchAll(/\$\('#([a-z0-9-]+)'\)/g))assert(ids.includes(match[1]),`Missing #${match[1]}`);
   new Function(source.replace(/^import[^\n]+;\s*$/gm,''));
  }
- for(const match of html.matchAll(/(?:src|href)="(\/[^"#]+)"/g))if(match[1]!=='/')readFileSync(new URL('.'+match[1],root));
+ for(const match of html.matchAll(/(?:src|href)="(\/[^"#]+)"/g))if(match[1]!=='/'){if(match[1]==='/premium')readFileSync(new URL('../app/premium/page.jsx',root));else readFileSync(new URL('.'+match[1],root));}
  assert(!html.includes('Get Premium'));assert(html.includes('Use local demo'));
 });
 test('HTTP: module assets, loopback aliases, invalid URLs and branded expired links',async()=>{

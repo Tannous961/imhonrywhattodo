@@ -13,3 +13,8 @@
 .route-page:not(.route-home) .play-toolbar{margin-top:24px}
 @media(max-width:760px){.route-decision .playground,.route-roulette .playground,.route-wingman .playground{grid-template-columns:minmax(0,1fr)}}
 .route-shared .hero-scroll,.route-shared .feature-cards,.route-shared .benefits,.route-shared .club-teaser,.route-shared .playground,.route-shared .share-banner,.route-shared .history-panel,.route-shared #club{display:none!important}
+
+/* Reuse existing club cards; keep daily progress visible on account pages. */
+.route-account #club .daily-challenge,.route-account #club .reward-progress{display:block!important}
+#club-reward-progress{width:100%;accent-color:#c6ff48}
+#wingman-upgrade a{text-decoration:underline;color:#ffb58c}
